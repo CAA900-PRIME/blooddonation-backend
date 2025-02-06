@@ -1,0 +1,57 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Flask cache and session files
+instance/
+*.log
+*.db
+*.sqlite3
+
+# Virtual environment
+venv/
+ENV/
+env/
+*.venv
+
+# Docker
+*.env
+.dockerignore
+docker-compose.override.yml
+docker-compose*.yml
+Dockerfile.*
+
+# PyCharm files
+.idea/
+
+# VSCode files
+.vscode/
+
+# System files
+.DS_Store
+Thumbs.db
+*.swp
+
+# Test and coverage reports
+htmlcov/
+.coverage
+*.cover
+*.py,cover
+.cache
+
+# MySQL dumps and backups
+*.sql
+*.dump
+*.bak
+
+# Python packages
+*.egg
+*.egg-info/
+dist/
+build/
+pip-wheel-metadata/
+
+# Migrations (if using Flask-Migrate)
+migrations/
+

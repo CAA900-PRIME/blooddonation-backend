@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Welcome to the Blood Donation App</h2>
+
+{% if 'username' in session %}
+    <p>Hello, {{ session['username'] }}! Thank you for joining our community.</p>
+    <h3>Upcoming Blood Donation Events</h3>
+    <div id="event-list">
+        <button hx-get="{{ url_for('load_events') }}" hx-target="#event-list" hx-swap="innerHTML">
+            Load Events
+        </button>
+    </div>
+{% else %}
+    <p>Please <a href="{{ url_for('login') }}">log in</a> or <a href="{{ url_for('signup') }}">sign up</a> to participate in our blood donation community.</p>
+{% endif %}
+{% endblock %}
+
