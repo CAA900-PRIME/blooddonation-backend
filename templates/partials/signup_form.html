@@ -1,5 +1,5 @@
 {% if error %}
-<div class="error">{{ error }}</div>
+{% include 'partials/alert.html' %}
 <form hx-post="{{ url_for('signup') }}" hx-target="#signup-container" hx-swap="innerHTML">
     <label for="username">Username</label>
     <input type="text" name="username" required>

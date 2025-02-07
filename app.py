@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, flash, session, jsonify
+from flask import Flask, render_template, redirect, render_template_string, url_for, request, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 import config
@@ -9,7 +9,7 @@ app.config.from_object(config.Config)
 # Initialize SQLAlchemy
 db = SQLAlchemy(app)
 
-# Define your User model
+# Define your User model TODO: We will need to have our own models folder to keep all database models organized.
 class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(120), unique=True, nullable=False)
@@ -70,7 +70,8 @@ def login():
 
         if user and check_password_hash(user.password, password):
             session['username'] = user.username
-            return """<p>Login Successful! click <a href="/">Home</a> to check up coming events!</p>"""
+            
+            return render_template('partials/alert.html', success="Login Successful! click <a href='/'>Home</a> to check up coming events!")
         return render_template('partials/login_form.html', error='Invalid username or password')
     return render_template('login.html', title='Login')
 
@@ -83,7 +84,7 @@ def logout():
 # This is an example, will be removed later.
 @app.route('/load-events')
 def load_events():
-    # For demo purposes, let's assume these are the events.
+    # let's assume these are the events. Only going to be shown for loggin users
     events = [
         {'name': 'City Hospital Blood Drive', 'date': '2025-02-10'},
         {'name': 'Community Center Donation Day', 'date': '2025-02-15'},

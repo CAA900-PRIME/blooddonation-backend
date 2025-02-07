@@ -1,6 +1,8 @@
 ### Project Overview - Blood Donation Web Application
 
-This web application is designed to simplify blood donation by directly connecting donors and requester without intermediaries. All users register under a single system, where they can act as both donors and requester. Once registered, users needing blood can submit a request, while donors simply wait to receive notifications about nearby requests. The goal is to make the donation process faster and more efficient, reducing the time involved in finding a suitable donor. The platform prioritizes simplicity, ensuring a user-friendly experience with minimal steps.
+This web application is designed to simplify blood donation by directly connecting donors and requester without intermediaries. All users register under a single system, where they can act as both donors and requester. Once registered, users needing blood can submit a request, while donors simply wait to receive notifications about nearby requests.
+
+The goal is to make the donation process faster and more efficient, reducing the time involved in finding a suitable donor. The platform prioritizes simplicity, ensuring a user-friendly experience with minimal steps.
 
 >[!CAUTION]
 >Ensure mysql docker container running before running this web application.
@@ -15,11 +17,11 @@ Ensure Docker installed, please follow the instructions from here: [docker insta
 #### Environment
 Before starting the web application, must first initialize python environment using:
 
-Python **environment**: to make it simple, its just a safe place were all the required packages of the web application are installed safely and are not conflicted with the system host.
-
 ```bash
 python3 -m venv env
 ```
+
+Python **environment**: to make it simple, its just a safe place were all the required packages of the web application are installed safely and are not conflicted with the system host.
 
 And to activate the environment: 
 
