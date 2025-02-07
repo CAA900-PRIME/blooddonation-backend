@@ -10,11 +10,13 @@ app.config.from_object(config.Config)
 db = SQLAlchemy(app)
 
 # Define your User model
-class User(db.Model):
+class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
-
+    def __init__(self, username,password):
+      self.username = username
+      self.password = password
     def __repr__(self):
         return f'<User {self.username}>'
 
@@ -25,17 +27,37 @@ def index():
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
-        username = request.form['username']
-        password = generate_password_hash(request.form['password'])
-        existing_user = User.query.filter_by(username=username).first()
+        # Retrieve form data safely
+        username = request.form.get('username')
+        password = request.form.get('password')
+
+        # Validate form inputs
+        if not username or not password:
+            return render_template('partials/signup_form.html', error='Both username and password are required.')
+
+        # Hash the password
+        password_hash = generate_password_hash(password)
+
+        # Check if the username already exists
+        existing_user = Users.query.filter_by(username=username).first()
         if existing_user:
             return render_template('partials/signup_form.html', error='Username already exists.')
-        
-        new_user = User(username=username, password=password)
-        db.session.add(new_user)
-        db.session.commit()
 
-        return render_template('partials/signup_form.html', success='Signup successful! Please login.')
+        try:
+            # Create and add new user
+            new_user = Users(username=username, password=password_hash)
+            db.session.add(new_user)
+            db.session.commit()
+
+            return render_template('partials/signup_form.html', success='Signup successful! Please login.')
+        
+        except Exception as e:
+            # Rollback the session in case of an error and log it
+            db.session.rollback()
+            print(f"Error creating user: {e}")
+            return render_template('partials/signup_form.html', error='An error occurred. Please try again.')
+
+    # Render the signup form for GET requests
     return render_template('signup.html', title='Sign Up')
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -44,11 +66,11 @@ def login():
         username = request.form['username']
         password = request.form['password']
 
-        user = User.query.filter_by(username=username).first()
+        user = Users.query.filter_by(username=username).first()
 
         if user and check_password_hash(user.password, password):
             session['username'] = user.username
-            return jsonify({'redirect': url_for('index')})
+            return """<p>Login Successful! click <a href="/">Home</a> to check up coming events!</p>"""
         return render_template('partials/login_form.html', error='Invalid username or password')
     return render_template('login.html', title='Login')
 
