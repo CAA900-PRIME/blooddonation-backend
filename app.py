@@ -1,12 +1,22 @@
 from flask import Flask, render_template, redirect, url_for, request, flash, session, jsonify
-from flask_mysqldb import MySQL
+from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 import config
 
 app = Flask(__name__)
 app.config.from_object(config.Config)
 
-mysql = MySQL(app)
+# Initialize SQLAlchemy
+db = SQLAlchemy(app)
+
+# Define your User model
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(200), nullable=False)
+
+    def __repr__(self):
+        return f'<User {self.username}>'
 
 @app.route('/')
 def index():
@@ -17,18 +27,14 @@ def signup():
     if request.method == 'POST':
         username = request.form['username']
         password = generate_password_hash(request.form['password'])
-
-        cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM users WHERE username = %s", (username,))
-        existing_user = cur.fetchone()
+        existing_user = User.query.filter_by(username=username).first()
         if existing_user:
-            cur.close()
             return render_template('partials/signup_form.html', error='Username already exists.')
         
-        cur.execute("INSERT INTO users (username, password) VALUES (%s, %s)", (username, password))
-        mysql.connection.commit()
-        cur.close()
-        
+        new_user = User(username=username, password=password)
+        db.session.add(new_user)
+        db.session.commit()
+
         return render_template('partials/signup_form.html', success='Signup successful! Please login.')
     return render_template('signup.html', title='Sign Up')
 
@@ -38,13 +44,10 @@ def login():
         username = request.form['username']
         password = request.form['password']
 
-        cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM users WHERE username = %s", (username,))
-        user = cur.fetchone()
-        cur.close()
+        user = User.query.filter_by(username=username).first()
 
-        if user and check_password_hash(user[2], password):
-            session['username'] = user[1]
+        if user and check_password_hash(user.password, password):
+            session['username'] = user.username
             return jsonify({'redirect': url_for('index')})
         return render_template('partials/login_form.html', error='Invalid username or password')
     return render_template('login.html', title='Login')
@@ -55,7 +58,7 @@ def logout():
     flash('You have been logged out.', 'info')
     return redirect(url_for('index'))
 
-# This is an exmaple, will be removed later.
+# This is an example, will be removed later.
 @app.route('/load-events')
 def load_events():
     # For demo purposes, let's assume these are the events.
@@ -67,4 +70,4 @@ def load_events():
     return render_template('partials/event_list.html', events=events)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=8080)

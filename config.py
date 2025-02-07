@@ -2,10 +2,10 @@ import os
 
 class Config:
     # Secret key for session management and security (you can set it in environment variables for security)
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'a_very_secret_key'
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'your-secret-key'
     
     # MySQL configuration for SQLAlchemy
-    MYSQL_HOST = 'db'  # Container name or hostname of MySQL service (in the Docker network)
+    MYSQL_HOST = 'localhost'  # Container name or hostname of MySQL service (in the Docker network)
     MYSQL_USER = 'flask_user'
     MYSQL_PASSWORD = 'flask_password'
     MYSQL_DB = 'blooddonation'
