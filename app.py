@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, render_template_string, url_for, request, flash, session
+from flask import Flask, render_template, redirect, url_for, request, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 import config
@@ -33,7 +33,7 @@ def signup():
 
         # Validate form inputs
         if not username or not password:
-            return render_template('partials/signup_form.html', error='Both username and password are required.')
+            return render_template('partials/alert.html', error='Both username and password are required.')
 
         # Hash the password
         password_hash = generate_password_hash(password)
@@ -41,7 +41,7 @@ def signup():
         # Check if the username already exists
         existing_user = Users.query.filter_by(username=username).first()
         if existing_user:
-            return render_template('partials/signup_form.html', error='Username already exists.')
+            return render_template('partials/alert.html', error='Username already exists.')
 
         try:
             # Create and add new user
@@ -49,15 +49,14 @@ def signup():
             db.session.add(new_user)
             db.session.commit()
 
-            return render_template('partials/signup_form.html', success='Signup successful! Please login.')
+            return render_template('partials/alert.html', success='Signup successful! Please <a href="/login">login</a>.')
         
         except Exception as e:
             # Rollback the session in case of an error and log it
             db.session.rollback()
             print(f"Error creating user: {e}")
-            return render_template('partials/signup_form.html', error='An error occurred. Please try again.')
+            return render_template('partials/alert.html', error='An error occurred. Please try again.')
 
-    # Render the signup form for GET requests
     return render_template('signup.html', title='Sign Up')
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -71,8 +70,8 @@ def login():
         if user and check_password_hash(user.password, password):
             session['username'] = user.username
             
-            return render_template('partials/alert.html', success="Login Successful! click <a href='/'>Home</a> to check up coming events!")
-        return render_template('partials/login_form.html', error='Invalid username or password')
+            return render_template('partials/alert.html', success="Logged In Successfully! <a href='/'>Home</a>")
+        return render_template('partials/alert.html', error='Invalid username or password')
     return render_template('login.html', title='Login')
 
 @app.route('/logout')

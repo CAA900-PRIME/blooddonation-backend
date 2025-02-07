@@ -1,15 +1,21 @@
 {% extends "base.html" %}
 {% block content %}
 <h2>Sign Up</h2>
-<div id="signup-container">
-    <form hx-post="{{ url_for('signup') }}" hx-target="#signup-container" hx-swap="innerHTML">
-        <label for="username">Username</label>
-        <input type="text" name="username" required>
-        
-        <label for="password">Password</label>
-        <input type="password" name="password" required>
-        
-        <button type="submit">Sign Up</button>
-    </form>
-</div>
+<form hx-post="{{ url_for('signup') }}" hx-target="#result" hx-swap="innerHTML">
+	<div id="result"></div> <!-- This will be replaced with HTMX -->
+
+	<div class="form-floating mb-3">
+		<input type="username" class="form-control" name="username" id="floatingInput" placeholder="username">
+		<label for="floatingInput">Username</label>
+	</div>
+
+	<div class="form-floating">
+		<input type="password" class="form-control" name="password" id="floatingPassword" placeholder="password">
+		<label for="floatingPassword">Password</label>
+	</div>
+	
+	<div style="text-align: right; margin-top: 10px;">
+		<button type="submit" style="width: 100px;" class="btn btn-primary">SignUp</button>
+	</div>
+</form>
 {% endblock %}

@@ -1,7 +1,7 @@
 import os
 
 class Config:
-    # Secret key for session management and security (you can set it in environment variables for security)
+    # The following can be left as it is for now, since we are still at development. Later will ensure to use environemt variables.
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'your-secret-key'
     
     # MySQL configuration for SQLAlchemy
