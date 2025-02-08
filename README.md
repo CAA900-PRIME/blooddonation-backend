@@ -6,22 +6,25 @@ The goal is to make the donation process faster and more efficient, reducing the
 
 >[!IMPORTANT]
 >Ensure mysql docker container running before running this web application.
-
->[!NOTE]
->This can be ran on your host, you don't need to run it in a container. However, for convenience just mysql will be running in a container with `--network host` option, to ensure our web app can access it.
 ### Prerequisites
-Ensure the latest version of python3 and pip are installed. [Python3 Download](https://www.python.org/downloads/) 
+Ensure the latest version of python3 and pip are installed. [Python3 Download](https://www.python.org/downloads/) Ensure to download the right version on your system.
 
-Ensure Docker installed, please follow the instructions from here: [docker installation](https://docs.docker.com/engine/install/) For [MacOS](https://docs.docker.com/desktop/setup/install/mac-install/)
+Ensure Docker installed, please follow the instructions from here: [Windows](https://docs.docker.com/desktop/setup/install/windows-install/) For [MacOS](https://docs.docker.com/desktop/setup/install/mac-install/)
 
-#### Environment
+Clone the repository
+
+```bash
+git@github.com:CAA900-PRIME/blooddonation-webapp.git
+```
+#### Environment Setup
 Before starting the web application, must first initialize python environment using:
 
 ```bash
 python3 -m venv env
 ```
 
-Python **environment**: to make it simple, its just a safe place were all the required packages of the web application are installed safely and are not conflicted with the system host.
+>[!NOTE]
+>Python **environment**: to make it simple, its just a safe place were all the required packages of the web application are installed safely and are not conflicted with the system host.
 
 And to activate the environment: 
 
@@ -48,9 +51,11 @@ To start the application
 python3 app.py
 ```
 
+>[!NOTE]
+>If there are any new libraries you have included to this project in the future, don't forget to execute `pip freeze > requirements.txt` to update list in that file.
 ### Project Requirements and Features
+###### Here will define all requirements and feature our web application:
 
-Here will define all requirements and feature of this web application.
+- [x] Full Functional Authentication | Login & Sign Up Pages
 ### Issues
-
 If you encounter any issues, please create a new issue on GitHub or Jira. Describe the problem in detail, and feel free to assign it to yourself or someone else if you plan to fix it.
