@@ -54,8 +54,32 @@ python3 app.py
 >[!NOTE]
 >If there are any new libraries you have included to this project in the future, don't forget to execute `pip freeze > requirements.txt` to update list in that file.
 ### Project Requirements and Features
-###### Here will define all requirements and feature our web application:
 
-- [x] Full Functional Authentication | Login & Sign Up Pages
+- [ ] Full Functional Authentication | Login & Sign Up Pages (In-Progress)
+### API Requests
+Getting available events, this is only for testing the requests
+```bash
+curl localhost:3000/api/events/get-events
+[{"date":"2025-02-10","name":"City Hospital Blood Drive"},{"date":"2025-02-15","name":"Community Center Donation Day"},{"date":"2025-02-20","name":"University Blood Donation Camp"}]
+```
+
+>[!NOTE]
+Getting list of signed up users, this is only for testing. We might need this to be available for admin or staff users.
+>```bash
+curl localhost:3000/api/users/get-users  
+[{"id":1,"username":"omar"},{"id":2,"username":"john_doe"}]
+>```
+
+User sign up successfully. 
+```bash
+curl -X POST http://localhost:3000/api/auth/signup \
+     -H "Content-Type: application/json" \
+     -d '{"username": "OmarAli", "password": "@Password"}'
+
+{"message":"Signup successful! Please login."}
+```
+
+>[!IMPORTANT]
+>We need to ensure that login, signup, CORS, and session management are properly implemented as we integrate the backend with the frontend before moving on to the next steps.
 ### Issues
 If you encounter any issues, please create a new issue on GitHub or Jira. Describe the problem in detail, and feel free to assign it to yourself or someone else if you plan to fix it.
