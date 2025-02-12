@@ -1,24 +1,14 @@
 from flask import Flask, render_template, redirect, url_for, request, flash, session
-from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 import config
+
+## Moved database and models
+from models import db, Users  # Import db and Users model from models
 
 app = Flask(__name__)
 app.config.from_object(config.Config)
 
-# Initialize SQLAlchemy
-db = SQLAlchemy(app)
-
-# Define your User model TODO: We will need to have our own models folder to keep all database models organized.
-class Users(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(200), nullable=False)
-    def __init__(self, username,password):
-      self.username = username
-      self.password = password
-    def __repr__(self):
-        return f'<User {self.username}>'
+db.init_app(app)  # Initialize the db with the app
 
 @app.route('/')
 def index():

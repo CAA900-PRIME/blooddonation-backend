@@ -14,7 +14,7 @@ Ensure Docker installed, please follow the instructions from here: [Windows](htt
 Clone the repository
 
 ```bash
-git@github.com:CAA900-PRIME/blooddonation-webapp.git
+git@github.com:CAA900-PRIME/blooddonation-backend.git
 ```
 #### Environment Setup
 Before starting the web application, must first initialize python environment using:
