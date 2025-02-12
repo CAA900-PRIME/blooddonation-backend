@@ -63,12 +63,11 @@ curl localhost:3000/api/events/get-events
 [{"date":"2025-02-10","name":"City Hospital Blood Drive"},{"date":"2025-02-15","name":"Community Center Donation Day"},{"date":"2025-02-20","name":"University Blood Donation Camp"}]
 ```
 
->[!NOTE]
 Getting list of signed up users, this is only for testing. We might need this to be available for admin or staff users.
->```bash
+```bash
 curl localhost:3000/api/users/get-users  
 [{"id":1,"username":"omar"},{"id":2,"username":"john_doe"}]
->```
+```
 
 User sign up successfully. 
 ```bash

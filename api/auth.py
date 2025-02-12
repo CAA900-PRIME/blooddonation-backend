@@ -9,7 +9,7 @@ auth_api = Blueprint('auth_api', __name__)
 
 @auth_api.route('/login', methods=['POST'])
 def login():
-    data: Optional[Dict] = request.json  # Expecting JSON payload
+    data: Optional[Dict] = request.json
     username = data.get('username')
     password = data.get('password')
 
@@ -21,7 +21,7 @@ def login():
     user = Users.query.filter_by(username=username).first()
 
     if user and check_password_hash(user.password, password):
-        session['username'] = user.username  # Use a session for now, replace with JWT for APIs
+        session['username'] = user.username
         return jsonify({"message": "Logged in successfully", "username": user.username}), 200
     
     return jsonify({"error": "Invalid username or password"}), 401

@@ -1,6 +1,5 @@
 from models import db
 
-# Define your User model TODO: We will need to have our own models folder to keep all database models organized.
 class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(120), unique=True, nullable=False)
