@@ -10,15 +10,16 @@ auth_api = Blueprint('auth_api', __name__)
 @auth_api.route('/login', methods=['POST'])
 def login():
     data: Optional[Dict] = request.json
-    username = data.get('username')
+    # Updating to use email instead of username
+    email = data.get('email')
     password = data.get('password')
 
     # Validate inputs
-    if not username or not password:
+    if not email or not password:
         return jsonify({"error": "Username and password are required"}), 400
 
     # Query the user from the database
-    user = Users.query.filter_by(username=username).first()
+    user = Users.query.filter_by(email=email).first()
 
     if user and check_password_hash(user.password, password):
         session['username'] = user.username

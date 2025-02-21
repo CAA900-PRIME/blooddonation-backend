@@ -8,9 +8,8 @@ app = Flask(__name__)
 
 app.config.from_object(config.Config)
 
-# Enable CORS for all domains (Will need to modify later) only accept traffic from a specific port number
-CORS(app, resources={r"/api/*": {"origins": "*"}})
-# i.ie : CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
+# Allow credentials and only allow requests from frontend (e.g., http://localhost:5173)
+CORS(app, resources={r"/api/*": {"origins": "http://localhost:5173", "supports_credentials": True}})
 
 db.init_app(app)  # Initialize the db with the app
 
