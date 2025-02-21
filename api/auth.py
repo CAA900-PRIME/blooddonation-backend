@@ -43,7 +43,7 @@ def signup():
     username = data.get('username')
     password = data.get('password')
     email = data.get('email')
-    phone_number = data.get('phone_number')
+    phone_number = data.get('phoneNumber')
     firstName = data.get('firstName')
     lastName = data.get('lastName')
     dob = data.get('dob')
