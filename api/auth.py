@@ -41,10 +41,19 @@ def signup():
     data = request.get_json()  # Expecting JSON payload
     username = data.get('username')
     password = data.get('password')
+    email = data.get('email')
+    phone_number = data.get('phone_number')
+    firstName = data.get('firstName')
+    lastName = data.get('lastName')
+    dob = data.get('dob')
+    postalCode = data.get('postalCode')
+
 
     # Validate form inputs
-    if not username or not password:
-        return jsonify({"error": "Both username and password are required"}), 400
+    if not username or not password or not email or not phone_number or not firstName or not lastName:
+        return {"error": "Missing required fields"}, 400
+    # if not username or not password:
+    #     return jsonify({"error": "Both username and password are required"}), 400
 
     # Hash the password
     password_hash = generate_password_hash(password)
@@ -56,7 +65,16 @@ def signup():
 
     try:
         # Create and add new user
-        new_user = Users(username=username, password=password_hash)
+        new_user = Users(
+                email=email,
+                username=username,
+                password=password_hash,
+                phone_number=phone_number,
+                firstName=firstName,
+                lastName=lastName,
+                dob=dob,
+                postalCode=postalCode
+        )
         db.session.add(new_user)
         db.session.commit()
 

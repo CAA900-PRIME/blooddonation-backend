@@ -60,22 +60,44 @@ python3 app.py
 Getting available events, this is only for testing the requests
 ```bash
 curl localhost:3000/api/events/get-events
+
 [{"date":"2025-02-10","name":"City Hospital Blood Drive"},{"date":"2025-02-15","name":"Community Center Donation Day"},{"date":"2025-02-20","name":"University Blood Donation Camp"}]
 ```
 
 Getting list of signed up users, this is only for testing. We might need this to be available for admin or staff users.
 ```bash
 curl localhost:3000/api/users/get-users  
-[{"id":1,"username":"omar"},{"id":2,"username":"john_doe"}]
+
+[{"Date Of Birth":"Mon, 01 Jan 1990 00:00:00 GMT","createdDate":"Fri, 21 Feb 2025 20:26:41 GMT","email":"omarali@example.com","firstName":"Omar","id":1,"lastLoggedIn":null,"lastName":"Ali","phone_number":"1234567890","postalCode":"A1A 1A1","username":"OmarAli","verifiedDate":null}]
 ```
 
 User sign up successfully. 
 ```bash
 curl -X POST http://localhost:3000/api/auth/signup \
      -H "Content-Type: application/json" \
-     -d '{"username": "OmarAli", "password": "@Password"}'
+     -d '{
+           "username": "OmarAli",
+           "password": "@Password",
+           "email": "omarali@example.com",
+           "phone_number": "1234567890",
+           "firstName": "Omar",
+           "lastName": "Ali",
+           "dob": "1990-01-01",
+           "postalCode": "A1A 1A1"
+         }'
+     {"message":"Signup successful! Please login."}
+```
 
-{"message":"Signup successful! Please login."}
+User login successfully.
+```bash
+curl -X POST http://localhost:3000/api/auth/login \
+     -H "Content-Type: application/json" \
+     -d '{
+           "username": "OmarAli",
+           "password": "@Password"
+         }'
+
+    {"message":"Logged in successfully","username":"OmarAli"}
 ```
 
 >[!IMPORTANT]
