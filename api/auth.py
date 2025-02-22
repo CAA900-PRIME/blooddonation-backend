@@ -86,5 +86,3 @@ def signup():
         db.session.rollback()
         print(f"Error creating user: {e}")
         return jsonify({"error": "An error occurred. Please try again."}), 500
-
-
