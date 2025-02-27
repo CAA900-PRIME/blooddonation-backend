@@ -23,7 +23,21 @@ def login():
 
     if user and check_password_hash(user.password, password):
         session['username'] = user.username
-        return jsonify({"message": "Logged in successfully", "username": user.username}), 200
+        user_data = {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "phone_number": user.phone_number,
+            "firstName": user.firstName,
+            "lastName": user.lastName,
+            "dob": user.dob.strftime("%Y-%m-%d") if user.dob else None,
+            "postalCode": user.postalCode,
+            "createdDate": user.createdDate.strftime("%Y-%m-%d %H:%M:%S") if user.createdDate else None,
+            "verifiedDate": user.verifiedDate.strftime("%Y-%m-%d %H:%M:%S") if user.verifiedDate else None,
+            "lastLoggedIn": user.lastLoggedIn.strftime("%Y-%m-%d %H:%M:%S") if user.lastLoggedIn else None
+        }
+
+        return jsonify({"message": "Logged in successfully", "user": user_data}), 200
     
     return jsonify({"error": "Invalid username or password"}), 401
 
@@ -40,6 +54,7 @@ def logout():
 @auth_api.route('/signup', methods=['POST'])
 def signup():
     data = request.get_json()  # Expecting JSON payload
+    print(data)
     username = data.get('username')
     password = data.get('password')
     email = data.get('email')

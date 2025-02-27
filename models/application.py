@@ -54,7 +54,7 @@ class Application(db.Model):
     def __repr__(self):
         return f'<Application {self.id} - {self.requester} - {self.doner_id} - {self.status}>'
 
-### Usage:
+### Usage example:
 # new_application = Application(
 #     requester_id=1,  # Assume the requester has user_id=1
 #     blood_type=BloodType.A_PLUS,
@@ -69,13 +69,10 @@ class Application(db.Model):
 # db.session.add(new_application)
 # db.session.commit()
 
-### When a doner applies
+### When a doner applies for an application
 # Assume we already have an application with id = 1, and a donor with user_id = 2
 # application = Application.query.get(1)  # Fetch the application you want to update
-#
 # # Update the application to assign a donor
 # application.doner_id = 2  # Assign the donor's ID
-#
-# # Commit the changes to the database
 # db.session.commit()
 
