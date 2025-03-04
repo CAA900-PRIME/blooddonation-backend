@@ -1,11 +1,13 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, session
 from models import Users
 
 user_api = Blueprint('user_api', __name__)
 
-# TODO: Ensure only admin users can view all users. This is only for testing
 @user_api.route('/get-users', methods=['GET'])
 def get_users():
+    if 'username' not in session:
+        # TODO: Ensure only admin users can view all users. This is only for testing
+        return jsonify({"error": "Unauthorized access. Please log in."}), 401
     users = Users.query.all()
     users_list = []
     for user in users:
@@ -23,5 +25,7 @@ def get_users():
             "lastLoggedIn": user.lastLoggedIn,
         }
         users_list.append(user_dict)
+    return jsonify({"users": users_list}), 200       
 
-    return jsonify(users_list)
+
+

@@ -5,7 +5,6 @@ from models import db
 from flask_cors import CORS
 app = Flask(__name__)
 
-
 app.config.from_object(config.Config)
 
 # Allow credentials and only allow requests from frontend (e.g., http://localhost:5173)

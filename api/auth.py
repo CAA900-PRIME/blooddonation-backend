@@ -38,7 +38,6 @@ def login():
         }
 
         return jsonify({"message": "Logged in successfully", "user": user_data}), 200
-    
     return jsonify({"error": "Invalid username or password"}), 401
 
 
@@ -46,7 +45,7 @@ def login():
 
 @auth_api.route('/logout', methods=['POST'])
 def logout():
-    session.pop('username', None)
+    session.pop('username', None) ## because we saved the username in the sessions when the user loggedIn
     return jsonify({"message": "You have been logged out successfully."}), 200
 
 
