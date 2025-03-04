@@ -35,12 +35,17 @@ class Applications(db.Model):
     status = db.Column(db.Enum(ApplicationStatus), default=ApplicationStatus.PENDING) 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    
+    appointment = db.Column(db.DateTime, nullable=False) # Time must be provided
     requester = db.relationship('Users', foreign_keys=[requester_id], backref='applications_requested', lazy=True)
     donor = db.relationship('Users', foreign_keys=[donor_id], backref='applications_donated', lazy=True)
     
-    def __init__(self, requester_id, blood_type, hospital_name,
-                 hospital_address, country, city, contact_phone_number, status=ApplicationStatus.PENDING, donor_id=None):
+    def __init__(self, requester_id,
+                 blood_type, hospital_name,
+                 hospital_address, country,
+                 city, contact_phone_number,
+                 status=ApplicationStatus.PENDING,
+                 donor_id=None,
+                 appointment):
         self.requester_id = requester_id
         self.blood_type = blood_type
         self.hospital_name = hospital_name
@@ -50,6 +55,7 @@ class Applications(db.Model):
         self.contact_phone_number = contact_phone_number
         self.status = status
         self.donor_id= donor_id
+        self.appointment = appointment
     
     def __repr__(self):
         return f'<Application {self.id} - {self.requester} - {self.donor_id} - {self.status}>'

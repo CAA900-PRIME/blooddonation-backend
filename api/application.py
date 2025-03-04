@@ -1,6 +1,7 @@
 from typing import Optional, Dict
 from flask import Blueprint, request, jsonify, session
 from models import Applications, db, Users
+from datetime import datetime
 
 app_api = Blueprint('app_api', __name__)
 
@@ -23,6 +24,9 @@ def create_application():
         country = data.get("country")
         city = data.get("city")
         phone_number = data.get("phone_number")
+        appointment = data.get("appointment")
+        if appointment: # get datetime of an appointment
+            appointment = datetime.fromisoformat(appointment)
 
         # Validate required fields
         if not hospital_name or not blood_type or not phone_number or not country or not city:
@@ -37,7 +41,8 @@ def create_application():
                 hospital_address=hospital_address,
                 city=city,
                 country=country,
-                contact_phone_number=phone_number
+                contact_phone_number=phone_number,
+                appointment=appointment
             )
             db.session.add(new_application)
             db.session.commit()
