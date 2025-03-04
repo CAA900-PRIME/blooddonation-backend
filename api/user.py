@@ -1,11 +1,12 @@
 from flask import Blueprint, jsonify, session
-from models import Users
+from models import Users, Applications
 
-user_api = Blueprint('user_api', __name__)
+user_api = Blueprint("user_api", __name__)
 
-@user_api.route('/get-users', methods=['GET'])
+# Get All Users (Dangerous)
+@user_api.route("/get-users", methods=["GET"])
 def get_users():
-    if 'username' not in session:
+    if "username" not in session:
         # TODO: Ensure only admin users can view all users. This is only for testing
         return jsonify({"error": "Unauthorized access. Please log in."}), 401
     users = Users.query.all()
@@ -18,7 +19,7 @@ def get_users():
             "phone_number": user.phone_number,
             "firstName": user.firstName,
             "lastName": user.lastName,
-            "Date Of Birth": user.dob,
+            "dob": user.dob,
             "postalCode": user.postalCode,
             "createdDate": user.createdDate,
             "verifiedDate": user.verifiedDate,
@@ -27,5 +28,32 @@ def get_users():
         users_list.append(user_dict)
     return jsonify({"users": users_list}), 200       
 
+# Dashboard
+@user_api.route("/get-dashboard", methods=["GET"])
+def get_dashboard():
+    # Retrun applications within the same city of the current user
+    if "username" in session:
+        username = session["username"]
+        user = Users.query.filter_by(username=username).first()
+        if user:
+            applications = Applications.query.filter_by(city=user.city).all()
+            app_list = []
+            for app in applications:
+                app_dict = {
+                    "id": app.id,
+                    "requester_id": app.requester_id,
+                    "doner_id": app.donor_id,
+                    "blood_type": app.blood_type,
+                    "hospital_name": app.hospital_name,
+                    "hospital_address": app.hospital_address,
+                    "counter": app.counter,
+                    "city": app.city,
+                    "contact_phone_number": app.contact_phone_number,
+                    "status": app.status,
+                    "created_at": app.created_at,
+                    "update_at": app.update_at,
+                }
+                app_list.append(app_dict)
+            return jsonify(app_list), 200 # This will return a list of all applications
 
-
+    return jsonify({"error": "Unauthorized or user not found"}), 401

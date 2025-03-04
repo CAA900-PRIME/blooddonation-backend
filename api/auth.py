@@ -31,6 +31,8 @@ def login():
             "firstName": user.firstName,
             "lastName": user.lastName,
             "dob": user.dob.strftime("%Y-%m-%d") if user.dob else None,
+            "country": user.country if user.country else None,
+            "city": user.city if user.city else None,
             "postalCode": user.postalCode,
             "createdDate": user.createdDate.strftime("%Y-%m-%d %H:%M:%S") if user.createdDate else None,
             "verifiedDate": user.verifiedDate.strftime("%Y-%m-%d %H:%M:%S") if user.verifiedDate else None,
@@ -54,21 +56,21 @@ def logout():
 def signup():
     data = request.get_json()  # Expecting JSON payload
     print(data)
-    username = data.get('username')
-    password = data.get('password')
-    email = data.get('email')
-    phone_number = data.get('phoneNumber')
-    firstName = data.get('firstName')
-    lastName = data.get('lastName')
-    dob = data.get('dob')
-    postalCode = data.get('postalCode')
+    username = data.get("username")
+    password = data.get("password")
+    email = data.get("email")
+    phone_number = data.get("phoneNumber")
+    firstName = data.get("firstName")
+    lastName = data.get("lastName")
+    dob = data.get("dob")
+    postalCode = data.get("postalCode")
+    country = data.get("country")
+    city = data.get("city")
 
 
     # Validate form inputs
     if not username or not password or not email or not phone_number or not firstName or not lastName:
         return {"error": "Missing required fields"}, 400
-    # if not username or not password:
-    #     return jsonify({"error": "Both username and password are required"}), 400
 
     # Hash the password
     password_hash = generate_password_hash(password)
@@ -88,7 +90,9 @@ def signup():
                 firstName=firstName,
                 lastName=lastName,
                 dob=dob,
-                postalCode=postalCode
+                postalCode=postalCode,
+                country=country,
+                city=city
         )
         db.session.add(new_user)
         db.session.commit()

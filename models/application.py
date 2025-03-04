@@ -19,15 +19,16 @@ class ApplicationStatus(Enum):
     COMPLETED = "Completed"
 
 
-class Application(db.Model):
+class Applications(db.Model):
     __tablename__ = 'application'
     
     id = db.Column(db.Integer, primary_key=True)
     requester_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    doner_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    donor_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     blood_type = db.Column(db.Enum(BloodType), nullable=False) 
     hospital_name = db.Column(db.String(255), nullable=False)
     hospital_address = db.Column(db.String(255), nullable=False)
+    # country, city and phone number can be retrieved from the user later when creating the application
     country = db.Column(db.String(100), nullable=False)
     city = db.Column(db.String(100), nullable=False)
     contact_phone_number = db.Column(db.String(15), nullable=False)
@@ -36,11 +37,10 @@ class Application(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     requester = db.relationship('Users', foreign_keys=[requester_id], backref='applications_requested', lazy=True)
-    
-    doner = db.relationship('Users', foreign_keys=[doner_id], backref='applications_donated', lazy=True)
+    donor = db.relationship('Users', foreign_keys=[donor_id], backref='applications_donated', lazy=True)
     
     def __init__(self, requester_id, blood_type, hospital_name,
-                 hospital_address, country, city, contact_phone_number, status=ApplicationStatus.PENDING, doner_id=None):
+                 hospital_address, country, city, contact_phone_number, status=ApplicationStatus.PENDING, donor_id=None):
         self.requester_id = requester_id
         self.blood_type = blood_type
         self.hospital_name = hospital_name
@@ -49,10 +49,10 @@ class Application(db.Model):
         self.city = city
         self.contact_phone_number = contact_phone_number
         self.status = status
-        self.doner_id = doner_id
+        self.donor_id= donor_id
     
     def __repr__(self):
-        return f'<Application {self.id} - {self.requester} - {self.doner_id} - {self.status}>'
+        return f'<Application {self.id} - {self.requester} - {self.donor_id} - {self.status}>'
 
 ### Usage example:
 # new_application = Application(
