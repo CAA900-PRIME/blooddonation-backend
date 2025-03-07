@@ -29,7 +29,7 @@ def create_application():
             appointment = datetime.fromisoformat(appointment)
 
         # Validate required fields
-        if not hospital_name or not blood_type or not phone_number or not country or not city:
+        if not hospital_name or not blood_type or not phone_number or not country or not city or not appointment:
             return jsonify({"error": "Missing required fields"}), 400
 
         try:

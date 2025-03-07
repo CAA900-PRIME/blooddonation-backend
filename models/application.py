@@ -45,7 +45,7 @@ class Applications(db.Model):
                  city, contact_phone_number,
                  status=ApplicationStatus.PENDING,
                  donor_id=None,
-                 appointment):
+                 appointment=None):
         self.requester_id = requester_id
         self.blood_type = blood_type
         self.hospital_name = hospital_name
