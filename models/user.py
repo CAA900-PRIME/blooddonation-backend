@@ -12,12 +12,13 @@ class Users(db.Model):
     dob = db.Column(db.Date, nullable=False, default=datetime(1970, 1, 1))
     country = db.Column(db.String(20), nullable=False)
     city = db.Column(db.String(20), nullable=False)
+    home_address = db.Column(db.String(20), nullable=False)
     postalCode = db.Column(db.String(7), nullable=False, default='A1A 1A1')
     createdDate = db.Column(db.DateTime, default=datetime.utcnow)
     verifiedDate = db.Column(db.DateTime, nullable=True)
     lastLoggedIn = db.Column(db.DateTime, nullable=True)
 
-    def __init__(self, email, username, password, phone_number, firstName, lastName, country, city ,dob=None, postalCode='A1A 1A1'):
+    def __init__(self, email, username, password, phone_number, firstName, lastName, country, city, homeAddress,dob=None, postalCode='A1A 1A1'):
         self.email = email
         self.username = username
         self.password = password
@@ -28,5 +29,6 @@ class Users(db.Model):
         self.postalCode = postalCode
         self.country = country
         self.city = city
+        self.home_address= homeAddress
     def __repr__(self):
         return f'<User {self.username}>'
