@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, session
 from werkzeug.security import generate_password_hash
-from models import Users
+from models import Users 
 from werkzeug.security import check_password_hash
 from typing import Optional, Dict
 from models import Users, db
@@ -31,6 +31,7 @@ def login():
             "firstName": user.firstName,
             "lastName": user.lastName,
             "dob": user.dob.strftime("%Y-%m-%d") if user.dob else None,
+            "homeAddress": user.home_address,
             "country": user.country if user.country else None,
             "city": user.city if user.city else None,
             "postalCode": user.postalCode,
@@ -64,12 +65,13 @@ def signup():
     lastName = data.get("lastName")
     dob = data.get("dob")
     postalCode = data.get("postalCode")
+    homeAddress = data.get("homeAddress")
     country = data.get("country")
     city = data.get("city")
 
 
     # Validate form inputs
-    if not username or not password or not email or not phone_number or not firstName or not lastName:
+    if not username or not password or not email or not phone_number or not firstName or not lastName or not homeAddress or not country or not city:
         return {"error": "Missing required fields"}, 400
 
     # Hash the password
@@ -92,7 +94,8 @@ def signup():
                 dob=dob,
                 postalCode=postalCode,
                 country=country,
-                city=city
+                city=city,
+                homeAddress=homeAddress
         )
         db.session.add(new_user)
         db.session.commit()
