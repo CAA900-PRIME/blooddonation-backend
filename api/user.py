@@ -29,7 +29,7 @@ def get_users():
     return jsonify({"users": users_list}), 200       
 
 # Dashboard
-@user_api.route("/get-dashboard", methods=["GET"])
+@user_api.route("/get-applications", methods=["GET"])
 def get_dashboard():
     # Retrun applications within the same city of the current user
     if "username" in session:
