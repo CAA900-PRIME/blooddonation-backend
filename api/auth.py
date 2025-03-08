@@ -27,7 +27,7 @@ def login():
             "id": user.id,
             "username": user.username,
             "email": user.email,
-            "phone_number": user.phone_number,
+            "phoneNumber": user.phone_number,
             "firstName": user.firstName,
             "lastName": user.lastName,
             "dob": user.dob.strftime("%Y-%m-%d") if user.dob else None,
@@ -56,7 +56,6 @@ def logout():
 @auth_api.route('/signup', methods=['POST'])
 def signup():
     data = request.get_json()  # Expecting JSON payload
-    print(data)
     username = data.get("username")
     password = data.get("password")
     email = data.get("email")
@@ -69,7 +68,7 @@ def signup():
     country = data.get("country")
     city = data.get("city")
 
-
+    print(username, password, email, phone_number, firstName, lastName, homeAddress, country, city)
     # Validate form inputs
     if not username or not password or not email or not phone_number or not firstName or not lastName or not homeAddress or not country or not city:
         return {"error": "Missing required fields"}, 400

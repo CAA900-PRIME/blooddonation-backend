@@ -34,8 +34,8 @@ class Applications(db.Model):
     contact_phone_number = db.Column(db.String(15), nullable=False)
     status = db.Column(db.Enum(ApplicationStatus), default=ApplicationStatus.PENDING) 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    appointment = db.Column(db.DateTime, nullable=False) # Time must be provided
+    # updatedAt = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    appointment = db.Column(db.DateTime, nullable=False)
     requester = db.relationship('Users', foreign_keys=[requester_id], backref='applications_requested', lazy=True)
     donor = db.relationship('Users', foreign_keys=[donor_id], backref='applications_donated', lazy=True)
     

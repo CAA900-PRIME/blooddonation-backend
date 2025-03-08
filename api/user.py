@@ -29,7 +29,7 @@ def get_users():
     return jsonify({"users": users_list}), 200       
 
 # Dashboard
-@user_api.route("/get-dashboard", methods=["GET"])
+@user_api.route("/get-applications", methods=["GET"])
 def get_dashboard():
     # Retrun applications within the same city of the current user
     if "username" in session:
@@ -43,15 +43,13 @@ def get_dashboard():
                     "id": app.id,
                     "requester_id": app.requester_id,
                     "doner_id": app.donor_id,
-                    "blood_type": app.blood_type,
                     "hospital_name": app.hospital_name,
                     "hospital_address": app.hospital_address,
-                    "counter": app.counter,
+                    "country": app.country,
                     "city": app.city,
                     "contact_phone_number": app.contact_phone_number,
                     "status": app.status,
                     "created_at": app.created_at,
-                    "update_at": app.update_at,
                 }
                 app_list.append(app_dict)
             return jsonify(app_list), 200 # This will return a list of all applications
