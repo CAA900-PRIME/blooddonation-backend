@@ -2,16 +2,6 @@ from datetime import datetime
 from enum import Enum
 from models import db
 
-class BloodType(Enum):
-    A_PLUS = "A+"
-    A_MINUS = "A-"
-    B_PLUS = "B+"
-    B_MINUS = "B-"
-    AB_PLUS = "AB+"
-    AB_MINUS = "AB-"
-    O_PLUS = "O+"
-    O_MINUS = "O-"
-
 class ApplicationStatus(Enum):
     PENDING = "Pending"
     APPROVED = "Approved"
@@ -25,7 +15,7 @@ class Applications(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     requester_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     donor_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
-    blood_type = db.Column(db.Enum(BloodType), nullable=False) 
+    blood_type = db.Column(db.String(3), nullable=False) 
     hospital_name = db.Column(db.String(255), nullable=False)
     hospital_address = db.Column(db.String(255), nullable=False)
     # country, city and phone number can be retrieved from the user later when creating the application
