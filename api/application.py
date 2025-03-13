@@ -64,3 +64,66 @@ def create_application():
 
     return jsonify({"error": "Unauthorized access"}), 401
 
+
+# Dashboard
+@app_api.route("/get-applications", methods=["GET"])
+def get_applications():
+    # Retrun applications within the same city of the current user
+    if "username" in session:
+        username = session["username"]
+        user = Users.query.filter_by(username=username).first()
+        if user:
+            applications = Applications.query.filter_by(city=user.city).all()
+            app_list = []
+            for app in applications:
+                app_dict = {
+                    "id": app.id,
+                    "requester_id": app.requester_id,
+                    "doner_id": app.donor_id,
+                    "blood_type": app.blood_type,
+                    "hospital_name": app.hospital_name,
+                    "hospital_address": app.hospital_address,
+                    "country": app.country,
+                    "city": app.city,
+                    "contact_phone_number": app.contact_phone_number,
+                    "status": app.status.value,
+                    "created_at": app.created_at,
+                    "appointment": app.appointment
+                }
+                app_list.append(app_dict)
+            return jsonify(app_list), 200 # This will return a list of all applications
+
+    return jsonify({"error": "Unauthorized or user not found"}), 401
+
+
+# Dashboard
+@app_api.route("/get-my-applications", methods=["GET"])
+def get_my_applications():
+    # Retrun applications within the same city of the current user
+    if "username" in session:
+        username = session["username"]
+        user = Users.query.filter_by(username=username).first()
+        if user:
+            applications = Applications.query.filter_by(city=user.city, requester_id=user.id).all()
+            app_list = []
+            for app in applications:
+                app_dict = {
+                    "id": app.id,
+                    "requester_id": app.requester_id,
+                    "doner_id": app.donor_id,
+                    "blood_type": app.blood_type,
+                    "hospital_name": app.hospital_name,
+                    "hospital_address": app.hospital_address,
+                    "country": app.country,
+                    "city": app.city,
+                    "contact_phone_number": app.contact_phone_number,
+                    "status": app.status.value,
+                    "created_at": app.created_at,
+                    "appointment": app.appointment
+                }
+                app_list.append(app_dict)
+            return jsonify(app_list), 200 # This will return a list of all applications
+
+    return jsonify({"error": "Unauthorized or user not found"}), 401
+
+
