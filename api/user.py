@@ -23,6 +23,20 @@ def enable_2fa():
 
     return jsonify({"message": "2FA enabled", "otp_secret": user.otp_secret})
 
+# Generate OTP
+@user_api.route("/generate-otp", methods=["POST"])
+def generate_otp():
+    data = request.json
+    user_id = data.get("user_id")
+
+    user = Users.query.get(user_id)
+    if not user or not user.otp_secret:
+        return jsonify({"error": "2FA not enabled"}), 400
+
+    otp = TwoFactorAuth.generate_otp(user.otp_secret)
+    return jsonify({"otp": otp})
+
+
 # Existing Routes
 @user_api.route("/get-users", methods=["GET"])
 def get_users():
