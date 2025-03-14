@@ -1,6 +1,7 @@
 from models import db
 from datetime import datetime
 
+
 class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(255), unique=True, nullable=False)
@@ -18,7 +19,11 @@ class Users(db.Model):
     verifiedDate = db.Column(db.DateTime, nullable=True)
     lastLoggedIn = db.Column(db.DateTime, nullable=True)
 
-    def __init__(self, email, username, password, phone_number, firstName, lastName, country, city, homeAddress,dob=None, postalCode='A1A 1A1'):
+    # Added column to store the OTP secret for 2FA
+    otp_secret = db.Column(db.String(16), nullable=True)
+
+    def __init__(self, email, username, password, phone_number, firstName, lastName, country, city, homeAddress,
+                 dob=None, postalCode='A1A 1A1'):
         self.email = email
         self.username = username
         self.password = password
@@ -29,6 +34,8 @@ class Users(db.Model):
         self.postalCode = postalCode
         self.country = country
         self.city = city
-        self.home_address= homeAddress
+        self.home_address = homeAddress
+        self.otp_secret = None  # Default to None until 2FA is enabled
+
     def __repr__(self):
         return f'<User {self.username}>'
