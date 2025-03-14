@@ -36,6 +36,23 @@ def generate_otp():
     otp = TwoFactorAuth.generate_otp(user.otp_secret)
     return jsonify({"otp": otp})
 
+# Verify OTP
+@user_api.route("/verify-otp", methods=["POST"])
+def verify_otp():
+    data = request.json
+    user_id = data.get("user_id")
+    otp = data.get("otp")
+
+    user = Users.query.get(user_id)
+    if not user or not user.otp_secret:
+        return jsonify({"error": "2FA not enabled"}), 400
+
+    is_valid = TwoFactorAuth.verify_otp(user.otp_secret, otp)
+    if is_valid:
+        return jsonify({"message": "OTP is valid!"})
+    else:
+        return jsonify({"error": "Invalid OTP"}), 400
+
 
 # Existing Routes
 @user_api.route("/get-users", methods=["GET"])
