@@ -19,7 +19,7 @@ class Users(db.Model):
     verifiedDate = db.Column(db.DateTime, nullable=True)
     lastLoggedIn = db.Column(db.DateTime, nullable=True)
 
-    # Added column to store the OTP secret for 2FA
+    # Added new column to store the OTP secret for 2FA (2 factor auth)
     otp_secret = db.Column(db.String(16), nullable=True)
 
     def __init__(self, email, username, password, phone_number, firstName, lastName, country, city, homeAddress,
