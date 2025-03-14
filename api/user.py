@@ -1,18 +1,37 @@
-from flask import Blueprint, jsonify, session
-from models import Users, Applications
+from flask import Blueprint, request, jsonify, session
+import pyotp
+from models import db
+from models.user import Users
+from models.two_factor import TwoFactorAuth
+from models import Applications
 
 user_api = Blueprint("user_api", __name__)
 
-# Get All Users (Dangerous)
+# Enable 2FA (Generate and Store OTP Secret)
+@user_api.route("/enable-2fa", methods=["POST"])
+def enable_2fa():
+    data = request.json
+    user_id = data.get("user_id")
+
+    user = Users.query.get(user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    # Generate OTP secret and save it to the user
+    user.otp_secret = TwoFactorAuth.generate_secret()
+    db.session.commit()
+
+    return jsonify({"message": "2FA enabled", "otp_secret": user.otp_secret})
+
+# Existing Routes
 @user_api.route("/get-users", methods=["GET"])
 def get_users():
     if "username" not in session:
-        # TODO: Ensure only admin users can view all users. This is only for testing
         return jsonify({"error": "Unauthorized access. Please log in."}), 401
+
     users = Users.query.all()
-    users_list = []
-    for user in users:
-        user_dict = {
+    users_list = [
+        {
             "id": user.id,
             "email": user.email,
             "username": user.username,
@@ -25,21 +44,20 @@ def get_users():
             "verifiedDate": user.verifiedDate,
             "lastLoggedIn": user.lastLoggedIn,
         }
-        users_list.append(user_dict)
-    return jsonify({"users": users_list}), 200       
+        for user in users
+    ]
+    return jsonify({"users": users_list}), 200
 
-# Dashboard
+
 @user_api.route("/get-applications", methods=["GET"])
 def get_dashboard():
-    # Retrun applications within the same city of the current user
     if "username" in session:
         username = session["username"]
         user = Users.query.filter_by(username=username).first()
         if user:
             applications = Applications.query.filter_by(city=user.city).all()
-            app_list = []
-            for app in applications:
-                app_dict = {
+            app_list = [
+                {
                     "id": app.id,
                     "requester_id": app.requester_id,
                     "doner_id": app.donor_id,
@@ -51,7 +69,8 @@ def get_dashboard():
                     "status": app.status,
                     "created_at": app.created_at,
                 }
-                app_list.append(app_dict)
-            return jsonify(app_list), 200 # This will return a list of all applications
+                for app in applications
+            ]
+            return jsonify(app_list), 200
 
     return jsonify({"error": "Unauthorized or user not found"}), 401
