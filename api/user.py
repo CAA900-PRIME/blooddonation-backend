@@ -104,7 +104,8 @@ def reset_password():
     user.reset_token_expiry = None
     db.session.commit()
 
-    return jsonify({"message": "Password successfully reset."}), 200)
+    return jsonify({"message": "Password successfully reset."}), 200
+
 
 # -------------------- EXISTING FUNCTIONALITY -------------------- #
 
