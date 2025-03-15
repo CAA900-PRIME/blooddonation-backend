@@ -79,6 +79,19 @@ def request_password_reset():
 
     return jsonify({"message": "Password reset token sent to your email."}), 200
 
+# Reset Password
+@user_api.route("/reset-password", methods=["POST"])
+def reset_password():
+    data = request.json
+    email = data.get("email")
+    token = data.get("token")
+    new_password = data.get("new_password")
+
+    user = Users.query.filter_by(email=email, reset_token=token).first()
+    if not user or user.reset_token_expiry < datetime.utcnow():
+        return jsonify({"error": "Invalid or expired token"}), 400
+
+
 # Existing Routes
 @user_api.route("/get-users", methods=["GET"])
 def get_users():
