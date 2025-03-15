@@ -6,7 +6,7 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY', 'your-secret-key')
 
     # MySQL configuration for SQLAlchemy
-    MYSQL_HOST = os.environ.get('MYSQL_HOST', 'localhost')
+    MYSQL_HOST = os.environ.get('MYSQL_HOST', 'blooddonation_db')  #  Change from 'localhost' to 'blooddonation_db'
     MYSQL_USER = os.environ.get('MYSQL_USER', 'flask_user')
     MYSQL_PASSWORD = os.environ.get('MYSQL_PASSWORD', 'flask_password')
     MYSQL_DB = os.environ.get('MYSQL_DB', 'blooddonation')
