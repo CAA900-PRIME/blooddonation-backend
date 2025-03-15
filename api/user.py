@@ -65,6 +65,10 @@ def request_password_reset():
     if not user:
         return jsonify({"error": "User not found"}), 404
 
+ # Generate a secure reset token
+    user.reset_token = secrets.token_hex(16)
+    user.reset_token_expiry = datetime.utcnow() + timedelta(minutes=30)  # Token valid for 30 min
+    db.session.commit()
 
 # Existing Routes
 @user_api.route("/get-users", methods=["GET"])
