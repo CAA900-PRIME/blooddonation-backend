@@ -53,6 +53,18 @@ def verify_otp():
     else:
         return jsonify({"error": "Invalid OTP"}), 400
 
+# -------------------- PASSWORD RESET FUNCTIONALITY -------------------- #
+
+# Request Password Reset (Generate Token & Send Email)
+@user_api.route("/request-password-reset", methods=["POST"])
+def request_password_reset():
+    data = request.json
+    email = data.get("email")
+
+    user = Users.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
 
 # Existing Routes
 @user_api.route("/get-users", methods=["GET"])
