@@ -1,4 +1,5 @@
 import os
+from flask_mail import Mail  #  Ensure Flask-Mail is imported
 
 class Config:
     # Secret Key (Used for session security)
@@ -23,3 +24,6 @@ class Config:
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')  # Get from environment
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')  # Get from environment
     MAIL_DEFAULT_SENDER = MAIL_USERNAME
+
+#  Initialize Flask-Mail (this was missing before)
+mail = Mail()
