@@ -1,11 +1,18 @@
 from flask import Blueprint, request, jsonify, session
 import pyotp
+import secrets
+from datetime import datetime, timedelta
+from flask_mail import Message
+from werkzeug.security import generate_password_hash, check_password_hash
 from models import db
 from models.user import Users
 from models.two_factor import TwoFactorAuth
 from models import Applications
+from config import mail, Config  # Ensure Flask-Mail & Config are imported
 
 user_api = Blueprint("user_api", __name__)
+
+# -------------------- 2FA FUNCTIONALITY -------------------- #
 
 # Enable 2FA (Generate and Store OTP Secret)
 @user_api.route("/enable-2fa", methods=["POST"])
@@ -65,12 +72,12 @@ def request_password_reset():
     if not user:
         return jsonify({"error": "User not found"}), 404
 
- # Generate a secure reset token
+    # Generate a secure reset token
     user.reset_token = secrets.token_hex(16)
     user.reset_token_expiry = datetime.utcnow() + timedelta(minutes=30)  # Token valid for 30 min
     db.session.commit()
 
- # Send reset token via email
+    # Send reset token via email
     msg = Message("Password Reset Request",
                   sender=Config.MAIL_USERNAME,  # Fixed sender
                   recipients=[user.email])
@@ -91,7 +98,7 @@ def reset_password():
     if not user or user.reset_token_expiry < datetime.utcnow():
         return jsonify({"error": "Invalid or expired token"}), 400
 
- # Hash the new password before storing it
+    # Hash the new password before storing it
     user.password = generate_password_hash(new_password)
     user.reset_token = None  # Clear the token
     user.reset_token_expiry = None
@@ -99,8 +106,9 @@ def reset_password():
 
     return jsonify({"message": "Password successfully reset."}), 200)
 
+# -------------------- EXISTING FUNCTIONALITY -------------------- #
 
-# Existing Routes
+# Get All Users (Admin Access Required)
 @user_api.route("/get-users", methods=["GET"])
 def get_users():
     if "username" not in session:
@@ -125,7 +133,7 @@ def get_users():
     ]
     return jsonify({"users": users_list}), 200
 
-
+# Dashboard - Get Applications Based on City
 @user_api.route("/get-applications", methods=["GET"])
 def get_dashboard():
     if "username" in session:
