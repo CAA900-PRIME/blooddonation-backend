@@ -1,6 +1,6 @@
 from typing import Optional, Dict
 from flask import Blueprint, request, jsonify, session
-from models import Applications, db, Users
+from models import Applications, db, Users, ApplicationStatus
 from datetime import datetime
 
 app_api = Blueprint('app_api', __name__)
@@ -71,10 +71,13 @@ def get_applications():
     # Retrun applications within the same city of the current user
     if "username" in session:
         username = session["username"]
-        # We will ensure to execlude the logged in user created applications.
+        # We will ensure to execlude the logged in user created applications. And not to show anything 
         user = Users.query.filter_by(username=username).first()
         if user:
-            applications = Applications.query.filter_by(city=user.city).filter(Applications.requester_id != user.id).all()
+            applications = Applications.query.filter_by(city=user.city).filter(
+                Applications.requester_id != user.id,
+                Applications.donor_id == None
+            ).all()
             app_list = []
             for app in applications:
                 app_dict = {
@@ -128,3 +131,24 @@ def get_my_applications():
     return jsonify({"error": "Unauthorized or user not found"}), 401
 
 
+# User Appply for blood request application
+@app_api.route("/apply-application", methods=["POST"])
+def apply_application():
+    data: Optional[Dict] = request.json  
+    # I think here we are only expecting the application id, since we alraedy have the user who is applying
+    if "username" in session:
+        username = session["username"]
+        user = Users.query.filter_by(username=username).first() # the user will be the donor.
+        if user:
+            app_id = data.get("app_id")
+            application = Applications.query.filter_by(id=app_id).first()
+            
+            if application:
+                application.donor_id = user.id
+                application.status = ApplicationStatus.APPROVED 
+                # Ensure its approved. If the current user remove it from thir applied list, we will need to change it to pending.
+                db.session.commit()
+                return jsonify({"message": "Application successfully applied."}), 200
+            return jsonify({"error": "Application not found."}), 404
+        return jsonify({"error": "User not found."}), 404
+    return jsonify({"error": "Unauthorized or user not found"}), 401
