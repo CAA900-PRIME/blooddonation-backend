@@ -22,6 +22,10 @@ class Users(db.Model):
     # Added new column to store the OTP secret for 2FA (Add 2FA OTP Secret Key)
     otp_secret = db.Column(db.String(16), nullable=True)
 
+    # Added fields for password reset functionality
+    reset_token = db.Column(db.String(100), nullable=True)  # Store password reset token
+    reset_token_expiry = db.Column(db.DateTime, nullable=True)  # Expiry time for the token
+
     def __init__(self, email, username, password, phone_number, firstName, lastName, country, city, homeAddress,
                  dob=None, postalCode='A1A 1A1'):
         self.email = email
@@ -36,6 +40,8 @@ class Users(db.Model):
         self.city = city
         self.home_address = homeAddress
         self.otp_secret = None  # Default to None until 2FA is enabled
+        self.reset_token = None  # Default to None until password reset is requested
+        self.reset_token_expiry = None  # Default to None until password reset is requested
 
     def __repr__(self):
         return f'<User {self.username}>'
