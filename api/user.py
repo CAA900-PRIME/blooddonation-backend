@@ -70,6 +70,15 @@ def request_password_reset():
     user.reset_token_expiry = datetime.utcnow() + timedelta(minutes=30)  # Token valid for 30 min
     db.session.commit()
 
+ # Send reset token via email
+    msg = Message("Password Reset Request",
+                  sender=Config.MAIL_USERNAME,  # Fixed sender
+                  recipients=[user.email])
+    msg.body = f"Your password reset token: {user.reset_token}"
+    mail.send(msg)
+
+    return jsonify({"message": "Password reset token sent to your email."}), 200
+
 # Existing Routes
 @user_api.route("/get-users", methods=["GET"])
 def get_users():
