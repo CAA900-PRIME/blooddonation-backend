@@ -71,9 +71,10 @@ def get_applications():
     # Retrun applications within the same city of the current user
     if "username" in session:
         username = session["username"]
+        # We will ensure to execlude the logged in user created applications.
         user = Users.query.filter_by(username=username).first()
         if user:
-            applications = Applications.query.filter_by(city=user.city).all()
+            applications = Applications.query.filter_by(city=user.city).filter(Applications.requester_id != user.id).all()
             app_list = []
             for app in applications:
                 app_dict = {
