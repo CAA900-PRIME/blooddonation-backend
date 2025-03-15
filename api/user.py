@@ -91,6 +91,14 @@ def reset_password():
     if not user or user.reset_token_expiry < datetime.utcnow():
         return jsonify({"error": "Invalid or expired token"}), 400
 
+ # Hash the new password before storing it
+    user.password = generate_password_hash(new_password)
+    user.reset_token = None  # Clear the token
+    user.reset_token_expiry = None
+    db.session.commit()
+
+    return jsonify({"message": "Password successfully reset."}), 200)
+
 
 # Existing Routes
 @user_api.route("/get-users", methods=["GET"])
