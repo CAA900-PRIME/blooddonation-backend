@@ -19,7 +19,7 @@ class Config:
     # Disable track modifications to avoid overhead
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    # Flask-Mail Configuration
+    # Flask-Mail Configuration (🔹 **ADD THIS** 🔹)
     MAIL_SERVER = 'smtp.gmail.com'  # Your email provider's SMTP server
     MAIL_PORT = 587  # Usually 587 for TLS
     MAIL_USE_TLS = True

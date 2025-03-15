@@ -1,17 +1,11 @@
 from flask import Blueprint, request, jsonify, session
 import pyotp
-import secrets
-from datetime import datetime, timedelta
-from flask_mail import Mail, Message
 from models import db
 from models.user import Users
 from models.two_factor import TwoFactorAuth
 from models import Applications
-from config import mail  # Ensure Flask-Mail is configured
 
 user_api = Blueprint("user_api", __name__)
-
-# -------------------- 2FA FUNCTIONALITY -------------------- #
 
 # Enable 2FA (Generate and Store OTP Secret)
 @user_api.route("/enable-2fa", methods=["POST"])
@@ -57,57 +51,10 @@ def verify_otp():
     if is_valid:
         return jsonify({"message": "OTP is valid!"})
     else:
-        return jsonify({"error": "Invalid OTP"}), 400)
+        return jsonify({"error": "Invalid OTP"}), 400
 
-# -------------------- PASSWORD RESET FUNCTIONALITY -------------------- #
 
-# Request Password Reset (Generate Token & Send Email)
-@user_api.route("/request-password-reset", methods=["POST"])
-def request_password_reset():
-    data = request.json
-    email = data.get("email")
-
-    user = Users.query.filter_by(email=email).first()
-    if not user:
-        return jsonify({"error": "User not found"}), 404
-
-    # Generate a secure reset token
-    user.reset_token = secrets.token_hex(16)
-    user.reset_token_expiry = datetime.utcnow() + timedelta(minutes=30)  # Token valid for 30 min
-    db.session.commit()
-
-    # Send reset token via email
-    msg = Message("Password Reset Request",
-                  sender="your-email@example.com",
-                  recipients=[user.email])
-    msg.body = f"Your password reset token: {user.reset_token}"
-    mail.send(msg)
-
-    return jsonify({"message": "Password reset token sent to your email."}), 200
-
-# Reset Password
-@user_api.route("/reset-password", methods=["POST"])
-def reset_password():
-    data = request.json
-    email = data.get("email")
-    token = data.get("token")
-    new_password = data.get("new_password")
-
-    user = Users.query.filter_by(email=email, reset_token=token).first()
-    if not user or user.reset_token_expiry < datetime.utcnow():
-        return jsonify({"error": "Invalid or expired token"}), 400
-
-    # Reset password
-    user.password = new_password  # You should hash the password before storing it!
-    user.reset_token = None  # Clear the token
-    user.reset_token_expiry = None
-    db.session.commit()
-
-    return jsonify({"message": "Password successfully reset."}), 200
-
-# -------------------- EXISTING FUNCTIONALITY -------------------- #
-
-# Get All Users (Admin Access Required)
+# Existing Routes
 @user_api.route("/get-users", methods=["GET"])
 def get_users():
     if "username" not in session:
@@ -132,7 +79,7 @@ def get_users():
     ]
     return jsonify({"users": users_list}), 200
 
-# Dashboard - Get Applications Based on City
+
 @user_api.route("/get-applications", methods=["GET"])
 def get_dashboard():
     if "username" in session:
