@@ -55,23 +55,24 @@ python3 app.py
 >If there are any new libraries you have included to this project in the future, don't forget to execute `pip freeze > requirements.txt` to update list in that file.
 ### Project Requirements and Features
 
-- [ ] Full Functional Authentication | Login & Sign Up Pages (In-Progress)
+- [x] Full Functional Authentication | Login & Sign Up Pages (Done)
+- [x] Filling out blood request application for each user
 ### API Requests
 Getting available events, this is only for testing the requests
 ```bash
 curl localhost:3000/api/events/get-events
-
 [{"date":"2025-02-10","name":"City Hospital Blood Drive"},{"date":"2025-02-15","name":"Community Center Donation Day"},{"date":"2025-02-20","name":"University Blood Donation Camp"}]
 ```
 
-Getting list of signed up users, this is only for testing. We might need this to be available for admin or staff users.
+##### Getting list of signed up users, this is only for testing. We might need this to be available for admin or staff users.
+
+Get all users (This only works for testing)
 ```bash
 curl localhost:3000/api/users/get-users  
-
 [{"Date Of Birth":"Mon, 01 Jan 1990 00:00:00 GMT","createdDate":"Fri, 21 Feb 2025 20:26:41 GMT","email":"omarali@example.com","firstName":"Omar","id":1,"lastLoggedIn":null,"lastName":"Ali","phone_number":"1234567890","postalCode":"A1A 1A1","username":"OmarAli","verifiedDate":null}]
 ```
 
-User sign up successfully. 
+POST: User sign up successfully. 
 ```bash
 curl -X POST http://localhost:3000/api/auth/signup \
      -H "Content-Type: application/json" \
@@ -88,7 +89,7 @@ curl -X POST http://localhost:3000/api/auth/signup \
      {"message":"Signup successful! Please login."}
 ```
 
-User login successfully.
+POST: User login successfully.
 ```bash
 curl -X POST http://localhost:3000/api/auth/login \
      -H "Content-Type: application/json" \
@@ -98,6 +99,29 @@ curl -X POST http://localhost:3000/api/auth/login \
          }'
 
     {"message":"Logged in successfully","username":"OmarAli"}
+```
+
+#### Getting all the countries and cities as well as cities based on country code
+
+Get all countries
+```bash
+curl localhost:3000/api/country/get-countries
+{"countries":[{"code":"CA","id":1,"name":"Canada"},{"code":"US","id":2,"name":"United States"}]}
+```
+
+Get all cities
+```bash
+curl localhost:3000/api/city/get-cities
+{"cities":[{"id":1,"name":"Toronto"},{"id":2,"name":"Vancouver"},{"id":3,"name":"Montreal"},{"id":4,"name":"Calgary"},{"id":5,"name":"Edmonton"},{"id":6,"name":"Ottawa"},{"id":7,"name":"Winnipeg"},{"id":8,"name":"Quebec City"},{"id":9,"name":"Halifax"},{"id":10,"name":"Saskatoon"},{"id":11,"name":"New York"},{"id":12,"name":"Los Angeles"},{"id":13,"name":"Chicago"},{"id":14,"name":"Houston"},{"id":15,"name":"Phoenix"},{"id":16,"name":"Philadelphia"},{"id":17,"name":"San Antonio"},{"id":18,"name":"San Diego"},{"id":19,"name":"Dallas"},{"id":20,"name":"San Jose"}]}
+```
+
+Get all cities based on country code
+```bash
+curl localhost:3000/api/city/get-cities-with-code/US
+{"cities":[{"id":11,"name":"New York"},{"id":12,"name":"Los Angeles"},{"id":13,"name":"Chicago"},{"id":14,"name":"Houston"},{"id":15,"name":"Phoenix"},{"id":16,"name":"Philadelphia"},{"id":17,"name":"San Antonio"},{"id":18,"name":"San Diego"},{"id":19,"name":"Dallas"},{"id":20,"name":"San Jose"}]}
+
+curl localhost:3000/api/city/get-cities-with-code/CA
+{"cities":[{"id":1,"name":"Toronto"},{"id":2,"name":"Vancouver"},{"id":3,"name":"Montreal"},{"id":4,"name":"Calgary"},{"id":5,"name":"Edmonton"},{"id":6,"name":"Ottawa"},{"id":7,"name":"Winnipeg"},{"id":8,"name":"Quebec City"},{"id":9,"name":"Halifax"},{"id":10,"name":"Saskatoon"}]}
 ```
 
 >[!IMPORTANT]
