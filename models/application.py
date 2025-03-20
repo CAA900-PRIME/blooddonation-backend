@@ -15,13 +15,11 @@ class Applications(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     requester_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     donor_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
-    blood_type = db.Column(db.String(3), nullable=False) 
     hospital_name = db.Column(db.String(255), nullable=False)
     hospital_address = db.Column(db.String(255), nullable=False)
-    # country, city and phone number can be retrieved from the user later when creating the application
     country = db.Column(db.String(100), nullable=False)
     city = db.Column(db.String(100), nullable=False)
-    contact_phone_number = db.Column(db.String(15), nullable=False)
+    phone_number = db.Column(db.String(15), nullable=False)
     status = db.Column(db.Enum(ApplicationStatus), default=ApplicationStatus.PENDING) 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     # updatedAt = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -30,19 +28,18 @@ class Applications(db.Model):
     donor = db.relationship('Users', foreign_keys=[donor_id], backref='applications_donated', lazy=True)
     
     def __init__(self, requester_id,
-                 blood_type, hospital_name,
+                 hospital_name,
                  hospital_address, country,
-                 city, contact_phone_number,
+                 city, phone_number,
                  status=ApplicationStatus.PENDING,
                  donor_id=None,
                  appointment=None):
         self.requester_id = requester_id
-        self.blood_type = blood_type
         self.hospital_name = hospital_name
         self.hospital_address = hospital_address
         self.country = country
         self.city = city
-        self.contact_phone_number = contact_phone_number
+        self.phone_number = phone_number
         self.status = status
         self.donor_id= donor_id
         self.appointment = appointment

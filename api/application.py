@@ -152,3 +152,5 @@ def apply_application():
             return jsonify({"error": "Application not found."}), 404
         return jsonify({"error": "User not found."}), 404
     return jsonify({"error": "Unauthorized or user not found"}), 401
+
+## TODO: Need to create get-applied-applications
