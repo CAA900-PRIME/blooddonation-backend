@@ -6,6 +6,7 @@ country_api = Blueprint("country_api", __name__)
 @country_api.route("/get-countries", methods=["GET"])
 def get_countries():
     countries = Countries.query.all()
+    print(countries)
     listOfCountries = []
     for country in countries:
         country_dict = {

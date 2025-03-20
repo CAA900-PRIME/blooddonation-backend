@@ -11,7 +11,7 @@ class Users(db.Model):
     lastName = db.Column(db.String(50), nullable=False)
     sex = db.Column(db.String(15), nullable=False)
     opt_secret = db.Column(db.String(16), nullable=True)
-    blood_type = db.Column(db.String(3), Nullable=False)
+    blood_type = db.Column(db.String(3), nullable=False)
     dob = db.Column(db.Date, nullable=False, default=datetime(1970, 1, 1))
     country = db.Column(db.String(20), nullable=False)
     city = db.Column(db.String(20), nullable=False)
@@ -34,4 +34,4 @@ class Users(db.Model):
         self.city = city
         self.home_address= homeAddress
     def __repr__(self):
-        return f'<User {self.username}>'
+        return f'<User {self.username} {self.firstName} {self.lastName}>'
