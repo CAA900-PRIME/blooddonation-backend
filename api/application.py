@@ -44,12 +44,11 @@ def create_application():
             # Create and add new application
             new_application = Applications(
                 requester_id=requester_id,
-                blood_type=blood_type,
                 hospital_name=hospital_name,
                 hospital_address=hospital_address,
                 city=city,
                 country=country,
-                contact_phone_number=phone_number,
+                phone_number=phone_number,
                 appointment=appointment
             )
             db.session.add(new_application)

@@ -1,5 +1,4 @@
 from models import db
-# from .city import Cities
 
 class Countries(db.Model):
     __tablename__ = "countries"
