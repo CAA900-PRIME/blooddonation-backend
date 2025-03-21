@@ -124,15 +124,16 @@ curl localhost:3000/api/city/get-cities-with-code/CA
 {"cities":[{"id":1,"name":"Toronto"},{"id":2,"name":"Vancouver"},{"id":3,"name":"Montreal"},{"id":4,"name":"Calgary"},{"id":5,"name":"Edmonton"},{"id":6,"name":"Ottawa"},{"id":7,"name":"Winnipeg"},{"id":8,"name":"Quebec City"},{"id":9,"name":"Halifax"},{"id":10,"name":"Saskatoon"}]}
 ```
 
-### Issues
-If you encounter any issues, please create a new issue on GitHub or Jira. Describe the problem in detail, and feel free to assign it to yourself or someone else if you plan to fix it.
-
 ## Security Features (Merged - Not Tested Yet)
-#### Two-Factor Authentication (2FA) Implementation
-##### Overview
+
+>[!NOTE]
+The feature has beed merged to the main branch successfully, however, it has not been tested yet. The testing will be done in the coming weeks. This will cover to ensure integration with the front-end as well.
+
+### Two-Factor Authentication (2FA) Implementation
+#### Overview
 This document describes the implementation of Two-Factor Authentication (2FA) in the Blood Donation Web App backend.
 
-##### Changes Made
+#### Changes Made
 
 **1. Database Changes**
 - **Added `otp_secret` column** to `Users` model (`models/user.py`) to store the OTP secret key.
@@ -145,7 +146,7 @@ This document describes the implementation of Two-Factor Authentication (2FA) in
 - **Generate OTP:** `/generate-otp` (Generates OTP using stored secret)
 - **Verify OTP:** `/verify-otp` (Validates the OTP entered by the user)
 
-## How to Test
+#### How to Test
 1. Enable 2FA for a user:
 ```json
 POST /enable-2fa
@@ -154,3 +155,5 @@ POST /enable-2fa
 }
 ```
 
+### Issues
+If you encounter any issues, please create a new issue on GitHub or Jira. Describe the problem in detail, and feel free to assign it to yourself or someone else if you plan to fix it.
