@@ -10,8 +10,8 @@ class Users(db.Model):
     phone_number = db.Column(db.String(15), nullable=False)
     firstName = db.Column(db.String(50), nullable=False)
     lastName = db.Column(db.String(50), nullable=False)
-    sex = db.Column(db.String(15), nullable=False)
-    blood_type = db.Column(db.String(3), nullable=False)
+    sex = db.Column(db.String(15), nullable=False, default="NONE")
+    blood_type = db.Column(db.String(3), nullable=False, default="A")
     dob = db.Column(db.Date, nullable=False, default=datetime(1970, 1, 1))
     country = db.Column(db.String(20), nullable=False)
     city = db.Column(db.String(20), nullable=False)
@@ -24,7 +24,7 @@ class Users(db.Model):
     reset_token = db.Column(db.String(100), nullable=True)  # Store password reset token
     reset_token_expiry = db.Column(db.DateTime, nullable=True)  # Expiry time for the token
 
-    def __init__(self, email, username, password, phone_number, firstName, lastName, country, city, homeAddress,
+    def __init__(self, email, username, password, phone_number, firstName, lastName, country, city, homeAddress,blood_type, sex,
                  dob=None, postalCode='A1A 1A1'):
         self.email = email
         self.username = username
@@ -36,6 +36,8 @@ class Users(db.Model):
         self.postalCode = postalCode
         self.country = country
         self.city = city
+        self.sex = sex
+        self.blood_type = blood_type
         self.home_address = homeAddress
         self.otp_secret = None  # Default to None until 2FA is enabled
         self.reset_token = None  # Default to None until password reset is requested

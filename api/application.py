@@ -78,7 +78,7 @@ def get_applications():
             ).all()
             app_list = []
             for app in applications:
-                requester_user = Users.query.filter_by(app.requester_id=id).first()
+                requester_user = Users.query.filter_by(id=app.requester_id).first()
                 if requester_user:
                     blood_type = requester_user.blood_type
                 else:
@@ -166,7 +166,7 @@ def get_applied_applications():
             applications = Applications.query.filter_by(city=user.city, requester_id=user.id, status=ApplicationStatus.APPROVED.value).all()
             app_list = []
             for app in applications:
-                requester_user = Users.query.filter_by(app.requester_id=id).first()
+                requester_user = Users.query.filter_by(id=app.requester_id).first()
                 if requester_user:
                     blood_type = requester_user.blood_type
                 else:
@@ -196,6 +196,7 @@ def get_applied_applications():
 @app_api.route("/delete-application", methods=["POST"])
 def delete_application():
     data: Optional[Dict] = request.json
+    print(data)
     if "username" in session:
         username = session["username"]
         user = Users.query.filter_by(username=username).first()
@@ -209,4 +210,4 @@ def delete_application():
             return jsonify({"error": "Unauthorized to delete this application."}), 403
         db.session.delete(application)
         db.session.commit()
-    return jsonify({"error": "Unauthorized or user not found"}), 401
+    return jsonify({"success": "deleted successfully!"}), 200

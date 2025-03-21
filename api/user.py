@@ -149,9 +149,11 @@ def get_user():
         "createdDate": user.createdDate,
         "verifiedDate": user.verifiedDate,
         "lastLoggedIn": user.lastLoggedIn,
-        "homeAddress": user.home_address,
+        "home_address": user.home_address,
         "country": user.country,
-        "city": user.city
+        "city": user.city,
+        "blood_type": user.blood_type,
+        "sex": user.sex
 
         # "bloodType": user.blood_type 
         # -- Will need to modify user database to incldue bloodtype instaed of having it wihtin Applicatoin Table
