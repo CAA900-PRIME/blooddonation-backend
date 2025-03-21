@@ -1,6 +1,7 @@
 from models import db
 from datetime import datetime
 
+
 class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(255), unique=True, nullable=False)
@@ -10,7 +11,6 @@ class Users(db.Model):
     firstName = db.Column(db.String(50), nullable=False)
     lastName = db.Column(db.String(50), nullable=False)
     sex = db.Column(db.String(15), nullable=False)
-    opt_secret = db.Column(db.String(16), nullable=True)
     blood_type = db.Column(db.String(3), nullable=False)
     dob = db.Column(db.Date, nullable=False, default=datetime(1970, 1, 1))
     country = db.Column(db.String(20), nullable=False)
@@ -20,8 +20,12 @@ class Users(db.Model):
     createdDate = db.Column(db.DateTime, default=datetime.utcnow)
     verifiedDate = db.Column(db.DateTime, nullable=True)
     lastLoggedIn = db.Column(db.DateTime, nullable=True)
+    otp_secret = db.Column(db.String(16), nullable=True)
+    reset_token = db.Column(db.String(100), nullable=True)  # Store password reset token
+    reset_token_expiry = db.Column(db.DateTime, nullable=True)  # Expiry time for the token
 
-    def __init__(self, email, username, password, phone_number, firstName, lastName, country, city, homeAddress,dob=None, postalCode='A1A 1A1'):
+    def __init__(self, email, username, password, phone_number, firstName, lastName, country, city, homeAddress,
+                 dob=None, postalCode='A1A 1A1'):
         self.email = email
         self.username = username
         self.password = password
@@ -32,6 +36,10 @@ class Users(db.Model):
         self.postalCode = postalCode
         self.country = country
         self.city = city
-        self.home_address= homeAddress
+        self.home_address = homeAddress
+        self.otp_secret = None  # Default to None until 2FA is enabled
+        self.reset_token = None  # Default to None until password reset is requested
+        self.reset_token_expiry = None  # Default to None until password reset is requested
+
     def __repr__(self):
         return f'<User {self.username} {self.firstName} {self.lastName}>'
