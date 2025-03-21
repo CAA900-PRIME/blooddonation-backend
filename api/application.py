@@ -21,17 +21,16 @@ def create_application():
             return jsonify({"error": "Incorrect match. Wrong cookie"}), 404
 
         # Extract values from request JSON
-        blood_type = data.get("blood_type")
         hospital_name = data.get("hospital_name")
         hospital_address = data.get("hospital_address")
         country = data.get("country")
         city = data.get("city")
-        phone_number = data.get("contact_phone_number")
+        phone_number = data.get("phone_number")
         appointment_str = data.get("appointment")
         
-        print(hospital_address, hospital_name, blood_type, phone_number, country, city, appointment_str)
+        print(hospital_address, hospital_name, phone_number, country, city, appointment_str)
         # Validate required fields
-        if not hospital_name or not blood_type or not phone_number or not country or not city or not appointment_str:
+        if not hospital_name or not phone_number or not country or not city or not appointment_str:
             return jsonify({"error": "Missing required fields"}), 400
 
         # Validate and parse appointment datetime
@@ -64,7 +63,7 @@ def create_application():
     return jsonify({"error": "Unauthorized access"}), 401
 
 
-# Dashboard
+# get all applications
 @app_api.route("/get-applications", methods=["GET"])
 def get_applications():
     # Retrun applications within the same city of the current user
@@ -79,27 +78,31 @@ def get_applications():
             ).all()
             app_list = []
             for app in applications:
+                requester_user = Users.query.filter_by(app.requester_id=id).first()
+                if requester_user:
+                    blood_type = requester_user.blood_type
+                else:
+                    blood_type = "Unknown - Refered to a deleted user account"
                 app_dict = {
                     "id": app.id,
                     "requester_id": app.requester_id,
                     "doner_id": app.donor_id,
-                    "blood_type": app.blood_type,
+                    "blood_type": blood_type, ## blood type coming from the user
                     "hospital_name": app.hospital_name,
                     "hospital_address": app.hospital_address,
                     "country": app.country,
                     "city": app.city,
-                    "contact_phone_number": app.contact_phone_number,
+                    "phone_number": app.phone_number,
                     "status": app.status.value,
                     "created_at": app.created_at,
                     "appointment": app.appointment
                 }
                 app_list.append(app_dict)
             return jsonify(app_list), 200 # This will return a list of all applications
-
     return jsonify({"error": "Unauthorized or user not found"}), 401
 
 
-# Dashboard
+# Dashboard get my applications
 @app_api.route("/get-my-applications", methods=["GET"])
 def get_my_applications():
     # Retrun applications within the same city of the current user
@@ -114,12 +117,12 @@ def get_my_applications():
                     "id": app.id,
                     "requester_id": app.requester_id,
                     "doner_id": app.donor_id,
-                    "blood_type": app.blood_type,
+                    "blood_type": user.blood_type, # blood type coming from the user
                     "hospital_name": app.hospital_name,
                     "hospital_address": app.hospital_address,
                     "country": app.country,
                     "city": app.city,
-                    "contact_phone_number": app.contact_phone_number,
+                    "phone_number": app.phone_number,
                     "status": app.status.value,
                     "created_at": app.created_at,
                     "appointment": app.appointment
@@ -152,4 +155,58 @@ def apply_application():
         return jsonify({"error": "User not found."}), 404
     return jsonify({"error": "Unauthorized or user not found"}), 401
 
-## TODO: Need to create get-applied-applications
+## TODO: get-applied-applications
+@app_api.route("/get-applied-applications", methods=["GET"])
+def get_applied_applications():
+    # Retrun applications within the same city of the current user
+    if "username" in session:
+        username = session["username"]
+        user = Users.query.filter_by(username=username).first()
+        if user:
+            applications = Applications.query.filter_by(city=user.city, requester_id=user.id, status=ApplicationStatus.APPROVED.value).all()
+            app_list = []
+            for app in applications:
+                requester_user = Users.query.filter_by(app.requester_id=id).first()
+                if requester_user:
+                    blood_type = requester_user.blood_type
+                else:
+                    blood_type = "Unknown - Refered to a deleted user account"
+                app_dict = {
+                    "id": app.id,
+                    "requester_id": app.requester_id,
+                    "doner_id": app.donor_id,
+                    "blood_type": blood_type,
+                    "hospital_name": app.hospital_name,
+                    "hospital_address": app.hospital_address,
+                    "country": app.country,
+                    "city": app.city,
+                    "phone_number": app.phone_number,
+                    "status": app.status.value,
+                    "created_at": app.created_at,
+                    "appointment": app.appointment
+                }
+                app_list.append(app_dict)
+            return jsonify(app_list), 200 # This will return a list of all applications
+
+    return jsonify({"error": "Unauthorized or user not found"}), 401
+
+
+
+## Delete created application by the logged in user.
+@app_api.route("/delete-application", methods=["POST"])
+def delete_application():
+    data: Optional[Dict] = request.json
+    if "username" in session:
+        username = session["username"]
+        user = Users.query.filter_by(username=username).first()
+        if not user:
+            return jsonify({"error": "User not found."}), 404
+        app_id = data.get("app_id")
+        application = Applications.query.filter_by(id=app_id).first()
+        if not application:
+            return jsonify({"error": "Application not found."}), 404
+        if application.requester_id != user.id:
+            return jsonify({"error": "Unauthorized to delete this application."}), 403
+        db.session.delete(application)
+        db.session.commit()
+    return jsonify({"error": "Unauthorized or user not found"}), 401
