@@ -127,7 +127,7 @@ curl localhost:3000/api/city/get-cities-with-code/CA
 ## Security Features (Merged - Not Tested Yet)
 
 >[!NOTE]
-The feature has beed merged to the main branch successfully, however, it has not been tested yet. The testing will be done in the coming weeks. This will cover to ensure integration with the front-end as well.
+The feature has been merged to the main branch successfully, however, it has not been tested yet. The testing will be done in the coming weeks. This will cover to ensure integration with the front-end as well.
 
 ### Two-Factor Authentication (2FA) Implementation
 #### Overview
