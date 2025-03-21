@@ -27,13 +27,15 @@ def login():
             "id": user.id,
             "username": user.username,
             "email": user.email,
-            "phoneNumber": user.phone_number,
+            "phone_number": user.phone_number,
             "firstName": user.firstName,
             "lastName": user.lastName,
             "dob": user.dob.strftime("%Y-%m-%d") if user.dob else None,
-            "homeAddress": user.home_address,
+            "home_address": user.home_address,
             "country": user.country if user.country else None,
             "city": user.city if user.city else None,
+            "sex": user.sex,
+            "blood_type": user.blood_type,
             "postalCode": user.postalCode,
             "createdDate": user.createdDate.strftime("%Y-%m-%d %H:%M:%S") if user.createdDate else None,
             "verifiedDate": user.verifiedDate.strftime("%Y-%m-%d %H:%M:%S") if user.verifiedDate else None,
@@ -67,8 +69,10 @@ def signup():
     homeAddress = data.get("homeAddress")
     country = data.get("country")
     city = data.get("city")
+    sex = data.get("sex")
+    blood_type = data.get("blood_type")
 
-    print(username, password, email, phone_number, firstName, lastName, homeAddress, country, city)
+    print(username, password, email, phone_number, firstName, lastName, homeAddress, country, city, sex, blood_type)
     # Validate form inputs
     if not username or not password or not email or not phone_number or not firstName or not lastName or not homeAddress or not country or not city:
         return {"error": "Missing required fields"}, 400
@@ -94,7 +98,9 @@ def signup():
                 postalCode=postalCode,
                 country=country,
                 city=city,
-                homeAddress=homeAddress
+                homeAddress=homeAddress,
+                sex=sex,
+                blood_type=blood_type
         )
         db.session.add(new_user)
         db.session.commit()
