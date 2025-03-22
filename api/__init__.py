@@ -9,4 +9,4 @@ def register_apis(app):
     app.register_blueprint(user_api, url_prefix="/api/users")
     app.register_blueprint(events_api, url_prefix="/api/events")
     app.register_blueprint(app_api, url_prefix="/api/app")
-
+    app.register_blueprint(two_factor_bp, url_prefix="/api/2fa")  # NEW: Register 2FA routes
