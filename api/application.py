@@ -19,6 +19,11 @@ def create_application():
         user_id = data.get("requester_id")
         if requester_id != user_id:
             return jsonify({"error": "Incorrect match. Wrong cookie"}), 404
+        
+
+        applications = Applications.query.filter_by(requester_id=requester_user.id).all()
+        if len(applications) >= 1:
+            return jsonify({"error": "More than one application found!"}), 400
 
         # Extract values from request JSON
         hospital_name = data.get("hospital_name")
