@@ -19,12 +19,16 @@ class Users(db.Model):
     verifiedDate = db.Column(db.DateTime, nullable=True)
     lastLoggedIn = db.Column(db.DateTime, nullable=True)
 
-    # Added new column to store the OTP secret for 2FA (Add 2FA OTP Secret Key)
+    #  Two-Factor Authentication (2FA)
     otp_secret = db.Column(db.String(16), nullable=True)
 
-    # Added fields for password reset functionality
-    reset_token = db.Column(db.String(100), nullable=True)  # Store password reset token
-    reset_token_expiry = db.Column(db.DateTime, nullable=True)  # Expiry time for the token
+    # Password Reset
+    reset_token = db.Column(db.String(100), nullable=True)
+    reset_token_expiry = db.Column(db.DateTime, nullable=True)
+
+    # Email Verification
+    is_verified = db.Column(db.Boolean, default=False)
+    verification_token = db.Column(db.String(100), nullable=True)
 
     def __init__(self, email, username, password, phone_number, firstName, lastName, country, city, homeAddress,
                  dob=None, postalCode='A1A 1A1'):
@@ -39,9 +43,13 @@ class Users(db.Model):
         self.country = country
         self.city = city
         self.home_address = homeAddress
-        self.otp_secret = None  # Default to None until 2FA is enabled
-        self.reset_token = None  # Default to None until password reset is requested
-        self.reset_token_expiry = None  # Default to None until password reset is requested
+
+        # Feature defaults
+        self.otp_secret = None
+        self.reset_token = None
+        self.reset_token_expiry = None
+        self.is_verified = False
+        self.verification_token = None
 
     def __repr__(self):
         return f'<User {self.username}>'
