@@ -1,5 +1,14 @@
 import pyotp
-import datetime
+from datetime import datetime, timedelta
+from models import db
+
+class TwoFactorCode(db.Model):
+    __tablename__ = 'two_factor_codes'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, nullable=False)
+    code = db.Column(db.String(6), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    expires_at = db.Column(db.DateTime, default=lambda: datetime.utcnow() + timedelta(minutes=5))
 
 class TwoFactorAuth:
     @staticmethod
