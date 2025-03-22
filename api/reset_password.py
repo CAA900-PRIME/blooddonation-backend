@@ -25,4 +25,19 @@ def request_reset():
 
     return jsonify({"message": "Reset link sent."})
 
+@reset_password_bp.route('/api/reset-password', methods=['POST'])
+def reset_password():
+    data = request.get_json()
+    token = data.get("token")
+    new_password = data.get("new_password")
 
+    user = User.query.filter_by(reset_token=token).first()
+    if not user or user.reset_token_expiry < datetime.utcnow():
+        return jsonify({"error": "Invalid or expired token"}), 400
+
+    user.set_password(new_password)
+    user.reset_token = None
+    user.reset_token_expiry = None
+    db.session.commit()
+
+    return jsonify({"message": "Password reset successful."})
