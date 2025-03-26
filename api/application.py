@@ -145,10 +145,15 @@ def apply_application():
         username = session["username"]
         user = Users.query.filter_by(username=username).first() # the user will be the donor.
         if user:
+            applications = Applications.query.filter_by(city=user.city, requester_id=user.id).all()
+            if len(applications) >= 1:
+                return jsonify({"error": "More than one application found!"}), 400
             app_id = data.get("app_id")
             application = Applications.query.filter_by(id=app_id).first()
-            
             if application:
+                requester_user = Users.query.filter_by(id=application.requester_id).first()
+                if requester_user.blood_type != user.blood_type:
+                    return jsonify({"error": "Blood type does not match!"}), 401
                 application.donor_id = user.id
                 application.status = ApplicationStatus.APPROVED
                 db.session.commit()
