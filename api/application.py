@@ -97,9 +97,7 @@ def get_applications():
                     "hospital_address": app.hospital_address,
                     "country": app.country,
                     "city": app.city,
-                    "phone_number": app.phone_number,
-                    "status": app.status.value,
-                    "created_at": app.created_at,
+                    "phone_number": app.phone_number, "status": app.status.value, "created_at": app.created_at,
                     "appointment": app.appointment
                 }
                 app_list.append(app_dict)
@@ -147,20 +145,45 @@ def apply_application():
         username = session["username"]
         user = Users.query.filter_by(username=username).first() # the user will be the donor.
         if user:
+            applications = Applications.query.filter_by(city=user.city, requester_id=user.id).all()
+            if len(applications) >= 1:
+                return jsonify({"error": "More than one application found!"}), 400
             app_id = data.get("app_id")
             application = Applications.query.filter_by(id=app_id).first()
-            
             if application:
+                requester_user = Users.query.filter_by(id=application.requester_id).first()
+                if requester_user.blood_type != user.blood_type:
+                    return jsonify({"error": "Blood type does not match!"}), 401
                 application.donor_id = user.id
-                application.status = ApplicationStatus.APPROVED 
-                # Ensure its approved. If the current user remove it from thir applied list, we will need to change it to pending.
+                application.status = ApplicationStatus.APPROVED
                 db.session.commit()
                 return jsonify({"message": "Application successfully applied."}), 200
             return jsonify({"error": "Application not found."}), 404
         return jsonify({"error": "User not found."}), 404
     return jsonify({"error": "Unauthorized or user not found"}), 401
 
-## TODO: get-applied-applications
+# User cancel a blood request application
+@app_api.route("/cancel-application", methods=["POST"])
+def cancel_application():
+    data: Optional[Dict] = request.json  
+    # I think here we are only expecting the application id, since we alraedy have the user who is canceling
+    if "username" in session:
+        username = session["username"]
+        user = Users.query.filter_by(username=username).first()
+        if user:
+            app_id = data.get("app_id")
+            application = Applications.query.filter_by(id=app_id).first()
+            
+            if application:
+                application.donor_id = None
+                application.status = ApplicationStatus.PENDING
+                db.session.commit()
+                return jsonify({"message": "Application successfully canceled."}), 200
+            return jsonify({"error": "Application not found."}), 404
+        return jsonify({"error": "User not found."}), 404
+    return jsonify({"error": "Unauthorized or user not found"}), 401
+
+
 @app_api.route("/get-applied-applications", methods=["GET"])
 def get_applied_applications():
     # Retrun applications within the same city of the current user
@@ -168,7 +191,7 @@ def get_applied_applications():
         username = session["username"]
         user = Users.query.filter_by(username=username).first()
         if user:
-            applications = Applications.query.filter_by(city=user.city, requester_id=user.id, status=ApplicationStatus.APPROVED.value).all()
+            applications = Applications.query.filter_by(city=user.city, donor_id=user.id).all()
             app_list = []
             for app in applications:
                 requester_user = Users.query.filter_by(id=app.requester_id).first()
@@ -192,9 +215,33 @@ def get_applied_applications():
                 }
                 app_list.append(app_dict)
             return jsonify(app_list), 200 # This will return a list of all applications
-
     return jsonify({"error": "Unauthorized or user not found"}), 401
 
+## Update currnet selected application
+@app_api.route("/update-application/<int:app_id>", methods=["POST"])
+def update_application(app_id):
+    if "username" not in session:
+            return jsonify({"error": "Unauthorized access"}), 403
+
+    username = session["username"]
+    user = Users.query.filter_by(username=username).first()
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    application = Applications.query.filter_by(id=app_id).first()
+    if not application:
+        return jsonify({"error": "Blood Request application not found"}), 404
+
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+
+    # Update only provided fields
+    for key, value in data.items():
+        if hasattr(application, key):
+            setattr(application, key, value)
+    db.session.commit()
+    return jsonify({"success": "Updated successfully!"}), 200
 
 
 ## Delete created application by the logged in user.
@@ -215,4 +262,4 @@ def delete_application():
             return jsonify({"error": "Unauthorized to delete this application."}), 403
         db.session.delete(application)
         db.session.commit()
-    return jsonify({"success": "deleted successfully!"}), 200
+    return jsonify({"success": "Deleted successfully!"}), 200
