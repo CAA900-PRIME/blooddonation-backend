@@ -97,9 +97,7 @@ def get_applications():
                     "hospital_address": app.hospital_address,
                     "country": app.country,
                     "city": app.city,
-                    "phone_number": app.phone_number,
-                    "status": app.status.value,
-                    "created_at": app.created_at,
+                    "phone_number": app.phone_number, "status": app.status.value, "created_at": app.created_at,
                     "appointment": app.appointment
                 }
                 app_list.append(app_dict)
@@ -195,6 +193,31 @@ def get_applied_applications():
 
     return jsonify({"error": "Unauthorized or user not found"}), 401
 
+## Update currnet selected application
+@app_api.route("/update-application/<int:app_id>", methods=["POST"])
+def update_application(app_id):
+    if "username" not in session:
+            return jsonify({"error": "Unauthorized access"}), 403
+
+    username = session["username"]
+    user = Users.query.filter_by(username=username).first()
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    application = Applications.query.filter_by(id=app_id).first()
+    if not application:
+        return jsonify({"error": "Blood Request application not found"}), 404
+
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+
+    # Update only provided fields
+    for key, value in data.items():
+        if hasattr(application, key):
+            setattr(application, key, value)
+    db.session.commit()
+    return jsonify({"success": "Updated successfully!"}), 200
 
 
 ## Delete created application by the logged in user.
@@ -215,4 +238,4 @@ def delete_application():
             return jsonify({"error": "Unauthorized to delete this application."}), 403
         db.session.delete(application)
         db.session.commit()
-    return jsonify({"success": "deleted successfully!"}), 200
+    return jsonify({"success": "Deleted successfully!"}), 200
