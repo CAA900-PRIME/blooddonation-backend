@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, session
+from flask import send_file, Blueprint, request, jsonify, session
 import pyotp
 import secrets
 from datetime import datetime, timedelta
@@ -8,6 +8,7 @@ from models import db
 from models.user import Users
 from models.two_factor import TwoFactorAuth
 from config import mail, Config
+from io import BytesIO
 
 user_api = Blueprint("user_api", __name__)
 
@@ -154,8 +155,43 @@ def get_user():
         "city": user.city,
         "blood_type": user.blood_type,
         "sex": user.sex
-
-        # "bloodType": user.blood_type 
-        # -- Will need to modify user database to incldue bloodtype instaed of having it wihtin Applicatoin Table
     }
-    return jsonify(user_content), 200       
+    return jsonify(user_content), 200
+
+@user_api.route('/update-profile-picture', methods=['POST'])
+def update_profile_picture():
+    if "username" not in session:
+        return jsonify({"error": "Unauthorized access"}), 403
+
+    username = session["username"]
+    user = Users.query.filter_by(username=username).first()
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    if "profile_pic" not in request.files:
+        return jsonify({"error": "No image file provided"}), 400
+
+    image = request.files["profile_pic"].read()
+    user.profile_pic = image
+    db.session.commit()
+
+    return jsonify({"message": "Profile picture updated successfully!"}), 200
+
+
+@user_api.route('/get-profile-picture', methods=['GET'])
+def get_profile_picture():
+    if "username" not in session:
+        return jsonify({"error": "Unauthorized access"}), 403
+
+    username = session["username"]
+    user = Users.query.filter_by(username=username).first()
+    
+    if not user or not user.profile_pic:
+        return jsonify({"error": "Profile picture not found"}), 404
+
+    return send_file(
+        BytesIO(user.profile_pic), 
+        mimetype='image/jpeg',
+        as_attachment=False,
+        download_name="profile_picture.jpg"
+    )
