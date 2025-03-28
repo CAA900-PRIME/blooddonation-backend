@@ -270,3 +270,45 @@ def delete_application():
         db.session.delete(application)
         db.session.commit()
     return jsonify({"success": "Deleted successfully!"}), 200
+
+
+## Get application details
+@app_api.route("/get-approved-application-details", methods=["POST"])
+def get_approved_application_details():
+    ## First we need to get the current application that is applied for.
+    data: Optional[Dict] = request.json
+    username = session["username"]
+    if "username" in session:
+        user = Users.query.filter_by(username=username).first()
+        if not user:
+            return jsonify({"error": "User not found."}), 404
+        app_id = data.get("app_id")
+        application = Applications.query.filter_by(id=app_id).first()
+        if not application:
+            return jsonify({"error": "Application not found."}), 404
+        requester = Users.query.filter_by(id=application.requester_id).first()
+        donor = Users.query.filter_by(id=application.donor_id).first()
+        app_details = {
+                "id": application.id,
+                "rqFirstName": requester.firstName,
+                "rqLastName": requester.lastName,
+                "rqPhone": requester.phone_number,
+                "rqEmail": requester.email,
+                "rqBloodType": requester.blood_type,
+                "rqSex": requester.sex,
+                "doFirstName": donor.firstName,
+                "doLastName": donor.lastName,
+                "doPhone": donor.phone_number,
+                "doEmail": donor.email,
+                "doBloodType": donor.blood_type,
+                "doSex": donor.sex,
+                "appHospitalName":application.hospital_name,
+                "appHospitalAddress": application.hospital_address,
+                "appCountry": application.country,
+                "appCity": application.city,
+                "appStatus": application.status.value,
+                "appAppointment": application.appointment
+        }
+
+        return jsonify({"app_details": app_details}), 200
+    return jsonify({"error": "Couldn't get application details"}), 400
