@@ -236,6 +236,8 @@ def update_application(app_id):
     application = Applications.query.filter_by(id=app_id).first()
     if not application:
         return jsonify({"error": "Blood Request application not found"}), 404
+    if application.status == ApplicationStatus.APPROVED:
+        return jsonify({"error": "The blood request application cannot be modified. It has already beeen accepted."}), 404
 
     data = request.get_json()
     if not data:
