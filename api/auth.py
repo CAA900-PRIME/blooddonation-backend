@@ -112,3 +112,32 @@ def signup():
         db.session.rollback()
         print(f"Error creating user: {e}")
         return jsonify({"error": "An error occurred. Please try again."}), 500
+
+
+@auth_api.route('/edit-profile', methods=['POST'])
+def edit_profile():
+    if "username" not in session:
+        return jsonify({"error": "Unauthorized access"}), 403
+
+    username = session["username"]
+    user = Users.query.filter_by(username=username).first()
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+
+    # Update only provided fields
+    editable_fields = [
+        "email", "phone_number", "firstName", "lastName",
+        "dob", "postalCode", "homeAddress", "country", "city"
+    ]
+
+    for key, value in data.items():
+        if key in editable_fields and value:
+            setattr(user, key, value)
+
+    db.session.commit()
+
+    return jsonify({"success": "Profile updated successfully!"}), 200
