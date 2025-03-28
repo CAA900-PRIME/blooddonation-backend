@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify, session
+import traceback
 from werkzeug.security import generate_password_hash
 from models import Users 
 from werkzeug.security import check_password_hash
@@ -125,19 +126,25 @@ def edit_profile():
         return jsonify({"error": "User not found"}), 404
 
     data = request.get_json()
+    print(data)
     if not data:
         return jsonify({"error": "No data provided"}), 400
 
-    # Update only provided fields
-    editable_fields = [
-        "email", "phone_number", "firstName", "lastName",
-        "dob", "postalCode", "homeAddress", "country", "city"
-    ]
+    try:
+        user.email = data.get("email", user.email)
+        user.phone_number = data.get("phone_number", user.phone_number)
+        user.firstName = data.get("firstName", user.firstName)
+        user.lastName = data.get("lastName", user.lastName)
+        user.dob = data.get("dob", user.dob)
+        user.postalCode = data.get("postalCode", user.postalCode)
+        user.home_address = data.get("homeAddress", user.home_address)
+        user.country = data.get("country", user.country)
+        user.city = data.get("city", user.city)
 
-    for key, value in data.items():
-        if key in editable_fields and value:
-            setattr(user, key, value)
+        db.session.commit()
+        return jsonify({"success": "Profile updated successfully!"}), 200
 
-    db.session.commit()
-
-    return jsonify({"success": "Profile updated successfully!"}), 200
+    except Exception as e:
+        db.session.rollback()
+        print("Database Update Failed:", traceback.format_exc())  
+        return jsonify({"error": str(e)}), 500
