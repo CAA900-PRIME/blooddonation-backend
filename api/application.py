@@ -7,7 +7,7 @@ app_api = Blueprint('app_api', __name__)
 
 @app_api.route("/create-application", methods=["POST"])
 def create_application():
-    data: Optional[Dict] = request.json  # Get JSON payload once
+    data: Optional[Dict] = request.json
     if "username" in session:
         username = session["username"]
         requester_user = Users.query.filter_by(username=username).first()
@@ -20,10 +20,15 @@ def create_application():
         if requester_id != user_id:
             return jsonify({"error": "Incorrect match. Wrong cookie"}), 404
         
-
+        # Check if there is already an application created
         applications = Applications.query.filter_by(requester_id=requester_user.id).all()
         if len(applications) >= 1:
-            return jsonify({"error": "More than one application found!"}), 400
+            return jsonify({"error": "You can only have one blood request application at a time."}), 400
+
+        # Check if the user has already applied to a blood request application
+        applications = Applications.query.filter_by(donor_id=requester_user.id).all()
+        if len(applications) >=1:
+            return jsonify({"error": "You cannot create to a blood request application at this time."}), 400
 
         # Extract values from request JSON
         hospital_name = data.get("hospital_name")
@@ -147,7 +152,7 @@ def apply_application():
         if user:
             applications = Applications.query.filter_by(city=user.city, requester_id=user.id).all()
             if len(applications) >= 1:
-                return jsonify({"error": "More than one application found!"}), 400
+                return jsonify({"error": "You cannot apply for a blood request application at this time."}), 400
             app_id = data.get("app_id")
             application = Applications.query.filter_by(id=app_id).first()
             if application:
