@@ -1,28 +1,28 @@
 from flask import Blueprint, request, jsonify, session
-from werkzeug.security import generate_password_hash
-from models import Users 
-from werkzeug.security import check_password_hash
-from typing import Optional, Dict
+from werkzeug.security import generate_password_hash, check_password_hash
 from models import Users, db
+from typing import Optional, Dict
+from datetime import datetime
+import uuid
+from utils.email_utils import send_email  # Make sure this exists or mock it
 
 auth_api = Blueprint('auth_api', __name__)
 
+# ------------------ LOGIN ------------------
 @auth_api.route('/login', methods=['POST'])
 def login():
     data: Optional[Dict] = request.json
-    # Updating to use email instead of username
     email = data.get('email')
     password = data.get('password')
 
-    # Validate inputs
     if not email or not password:
-        return jsonify({"error": "Username and password are required"}), 400
+        return jsonify({"error": "Email and password are required"}), 400
 
-    # Query the user from the database
     user = Users.query.filter_by(email=email).first()
 
     if user and check_password_hash(user.password, password):
         session['username'] = user.username
+
         user_data = {
             "id": user.id,
             "username": user.username,
@@ -32,8 +32,8 @@ def login():
             "lastName": user.lastName,
             "dob": user.dob.strftime("%Y-%m-%d") if user.dob else None,
             "homeAddress": user.home_address,
-            "country": user.country if user.country else None,
-            "city": user.city if user.city else None,
+            "country": user.country,
+            "city": user.city,
             "postalCode": user.postalCode,
             "createdDate": user.createdDate.strftime("%Y-%m-%d %H:%M:%S") if user.createdDate else None,
             "verifiedDate": user.verifiedDate.strftime("%Y-%m-%d %H:%M:%S") if user.verifiedDate else None,
@@ -41,21 +41,19 @@ def login():
         }
 
         return jsonify({"message": "Logged in successfully", "user": user_data}), 200
-    return jsonify({"error": "Invalid username or password"}), 401
 
+    return jsonify({"error": "Invalid email or password"}), 401
 
-
-
+# ------------------ LOGOUT ------------------
 @auth_api.route('/logout', methods=['POST'])
 def logout():
-    session.pop('username', None) ## because we saved the username in the sessions when the user loggedIn
+    session.pop('username', None)
     return jsonify({"message": "You have been logged out successfully."}), 200
 
-
-
+# ------------------ SIGNUP + Email Verification Token ------------------
 @auth_api.route('/signup', methods=['POST'])
 def signup():
-    data = request.get_json()  # Expecting JSON payload
+    data = request.get_json()
     username = data.get("username")
     password = data.get("password")
     email = data.get("email")
@@ -68,41 +66,34 @@ def signup():
     country = data.get("country")
     city = data.get("city")
 
-    print(username, password, email, phone_number, firstName, lastName, homeAddress, country, city)
-    # Validate form inputs
     if not username or not password or not email or not phone_number or not firstName or not lastName or not homeAddress or not country or not city:
         return {"error": "Missing required fields"}, 400
 
-    # Hash the password
-    password_hash = generate_password_hash(password)
-
-    # Check if the username already exists
     existing_user = Users.query.filter_by(username=username).first()
     if existing_user:
         return jsonify({"error": "Username already exists"}), 400
 
+    password_hash = generate_password_hash(password)
+    verification_token = str(uuid.uuid4())
+
     try:
-        # Create and add new user
         new_user = Users(
-                email=email,
-                username=username,
-                password=password_hash,
-                phone_number=phone_number,
-                firstName=firstName,
-                lastName=lastName,
-                dob=dob,
-                postalCode=postalCode,
-                country=country,
-                city=city,
-                homeAddress=homeAddress
+            email=email,
+            username=username,
+            password=password_hash,
+            phone_number=phone_number,
+            firstName=firstName,
+            lastName=lastName,
+            dob=dob,
+            postalCode=postalCode,
+            country=country,
+            city=city,
+            home_address=homeAddress,
+            verification_token=verification_token
         )
         db.session.add(new_user)
         db.session.commit()
 
-        return jsonify({"message": "Signup successful! Please login."}), 201
 
-    except Exception as e:
-        # Rollback the session in case of an error and log it
-        db.session.rollback()
-        print(f"Error creating user: {e}")
-        return jsonify({"error": "An error occurred. Please try again."}), 500
+
+
