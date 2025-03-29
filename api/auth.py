@@ -94,6 +94,28 @@ def signup():
         db.session.add(new_user)
         db.session.commit()
 
+        # Send verification email
+        frontend_url = "http://localhost:5173"  # change in production
+        verify_link = f"{frontend_url}/verify-email?token={verification_token}"
+        send_email(email, "Verify Your Account", f"Click to verify your email: {verify_link}")
 
+        return jsonify({"message": "Signup successful! Please verify your email."}), 201
 
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error creating user: {e}")
+        return jsonify({"error": "An error occurred. Please try again."}), 500
 
+# ------------------ Email Verification Endpoint ------------------
+@auth_api.route('/api/auth/verify', methods=['GET'])
+def verify_email():
+    token = request.args.get('token')
+    user = Users.query.filter_by(verification_token=token).first()
+
+    if user:
+        user.verifiedDate = datetime.utcnow()
+        user.verification_token = None
+        db.session.commit()
+        return jsonify({"message": "Email successfully verified."}), 200
+
+    return jsonify({"error": "Invalid or expired token."}), 400
