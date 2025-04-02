@@ -3,6 +3,8 @@ from flask import Blueprint, request, jsonify, session
 from models import Applications, db, Users, ApplicationStatus
 from datetime import datetime
 
+from models.activity_log import log_activity
+
 app_api = Blueprint('app_api', __name__)
 
 @app_api.route("/create-application", methods=["POST"])
@@ -37,7 +39,8 @@ def create_application():
         city = data.get("city")
         phone_number = data.get("phone_number")
         appointment_str = data.get("appointment")
-        
+
+
         print(hospital_address, hospital_name, phone_number, country, city, appointment_str)
         # Validate required fields
         if not hospital_name or not phone_number or not country or not city or not appointment_str:
@@ -62,6 +65,7 @@ def create_application():
             )
             db.session.add(new_application)
             db.session.commit()
+            log_activity(user_id=requester_user.id, action_type="Create Blood Request", action_description="Blood Request Application was created.")
             return jsonify({"message": "Application created successfully!"}), 201
 
         except Exception as e:
@@ -162,6 +166,7 @@ def apply_application():
                 application.donor_id = user.id
                 application.status = ApplicationStatus.APPROVED
                 db.session.commit()
+                log_activity(user_id=user.id, action_type="Applied Blood Request", action_description="Application successfully applied.")
                 return jsonify({"message": "Application successfully applied."}), 200
             return jsonify({"error": "Application not found."}), 404
         return jsonify({"error": "User not found."}), 404
