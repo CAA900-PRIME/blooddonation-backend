@@ -65,7 +65,7 @@ def create_application():
             )
             db.session.add(new_application)
             db.session.commit()
-            log_activity(user_id=requester_user.id, action_type="Create Blood Request", action_description="Blood Request Application was created.")
+            log_activity(user_id=requester_user.id, action_type="Create Blood Request Application", action_description=f"Blood Request Application was created. {new_application}")
             return jsonify({"message": "Application created successfully!"}), 201
 
         except Exception as e:
@@ -166,7 +166,11 @@ def apply_application():
                 application.donor_id = user.id
                 application.status = ApplicationStatus.APPROVED
                 db.session.commit()
-                log_activity(user_id=user.id, action_type="Applied Blood Request", action_description="Application successfully applied.")
+                log_activity(
+                        user_id=user.id,
+                        action_type="Applied Blood Request",
+                        action_description=f"Application successfully applied. {application}"
+                )
                 return jsonify({"message": "Application successfully applied."}), 200
             return jsonify({"error": "Application not found."}), 404
         return jsonify({"error": "User not found."}), 404
@@ -188,6 +192,11 @@ def cancel_application():
                 application.donor_id = None
                 application.status = ApplicationStatus.PENDING
                 db.session.commit()
+                log_activity(
+                        user_id=user.id,
+                        action_type="Canceled Blood Request",
+                        action_description=f"Application Canceled. ID: {application}"
+                )
                 return jsonify({"message": "Application successfully canceled."}), 200
             return jsonify({"error": "Application not found."}), 404
         return jsonify({"error": "User not found."}), 404
@@ -252,7 +261,13 @@ def update_application(app_id):
     for key, value in data.items():
         if hasattr(application, key):
             setattr(application, key, value)
+    log_activity(
+            user_id=user.id,
+            action_type="Update Blood Request Application",
+            action_description=f"Applicatioun {application} has been updated!"
+    )
     db.session.commit()
+    
     return jsonify({"success": "Updated successfully!"}), 200
 
 
@@ -274,6 +289,11 @@ def delete_application():
             return jsonify({"error": "Unauthorized to delete this application."}), 403
         db.session.delete(application)
         db.session.commit()
+        log_activity(
+            user_id=user.id,
+            action_type="Deleted Blood Request Application",
+            action_description=f"Applicatioun {application} has been deleted!"
+    )
     return jsonify({"success": "Deleted successfully!"}), 200
 
 
