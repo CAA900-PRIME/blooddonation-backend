@@ -167,10 +167,16 @@ def apply_application():
                 application.status = ApplicationStatus.APPROVED
                 db.session.commit()
                 log_activity(
-                        user_id=user.id,
-                        action_type="Applied Blood Request",
-                        action_description=f"Application successfully applied. {application}"
+                        user_id=application.requester_id,
+                        action_type="Approved Blood Request",
+                        action_description=f"Application successfully Accepted. {application} - {user.firstName} {user.email}"
                 )
+                log_activity(
+                        user_id=application.donor_id,
+                        action_type="Applied Blood Request",
+                        action_description=f"Application successfully applied. {application} - {requester_user.firstName} {requester_user.email}"
+                )
+
                 return jsonify({"message": "Application successfully applied."}), 200
             return jsonify({"error": "Application not found."}), 404
         return jsonify({"error": "User not found."}), 404
