@@ -278,7 +278,7 @@ def update_application(app_id):
     log_activity(
             user_id=user.id,
             action_type="Update Blood Request Application",
-            action_description=f"Applicatioun {application} has been updated!"
+            action_description=f"Applicatioun {application} has been Updated!"
     )
     db.session.commit()
     
@@ -301,13 +301,20 @@ def delete_application():
             return jsonify({"error": "Application not found."}), 404
         if application.requester_id != user.id:
             return jsonify({"error": "Unauthorized to delete this application."}), 403
+        # we need to check if donor id is attached. This will help us to send a notification to them.
+        if application.donor_id != None:
+            log_activity(
+                user_id=application.donor_id,
+                action_type="An application has been deleted!",
+                action_description=f"Applicatioun {application} has been deleted!"
+            )
+        log_activity(
+                user_id=user.id,
+                action_type="Deleted Blood Request Application",
+                action_description=f"Applicatioun {application} has been deleted!"
+                )
         db.session.delete(application)
         db.session.commit()
-        log_activity(
-            user_id=user.id,
-            action_type="Deleted Blood Request Application",
-            action_description=f"Applicatioun {application} has been deleted!"
-    )
     return jsonify({"success": "Deleted successfully!"}), 200
 
 
