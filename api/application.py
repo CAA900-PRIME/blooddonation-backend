@@ -65,7 +65,10 @@ def create_application():
             )
             db.session.add(new_application)
             db.session.commit()
-            log_activity(user_id=requester_user.id, action_type="Create Blood Request Application", action_description=f"Blood Request Application was created. {new_application}")
+            log_activity(
+                    user_id=requester_user.id,
+                    action_type="Create Blood Request Application",
+                    action_description=f"Blood Request Application Was Created. {new_application}")
             return jsonify({"message": "Application created successfully!"}), 201
 
         except Exception as e:
@@ -169,12 +172,12 @@ def apply_application():
                 log_activity(
                         user_id=application.requester_id,
                         action_type="Approved Blood Request",
-                        action_description=f"Application successfully Accepted. {application} - {user.firstName} {user.email}"
+                        action_description=f"Application successfully Accepted. {application}"
                 )
                 log_activity(
                         user_id=application.donor_id,
                         action_type="Applied Blood Request",
-                        action_description=f"Application successfully applied. {application} - {requester_user.firstName} {requester_user.email}"
+                        action_description=f"Application Successfully Applied. {application}"
                 )
 
                 return jsonify({"message": "Application successfully applied."}), 200
@@ -193,16 +196,21 @@ def cancel_application():
         if user:
             app_id = data.get("app_id")
             application = Applications.query.filter_by(id=app_id).first()
-            
             if application:
-                application.donor_id = None
+                requester_user = Users.query.filter_by(id=application.requester_id).first()
                 application.status = ApplicationStatus.PENDING
-                db.session.commit()
                 log_activity(
-                        user_id=user.id,
+                        user_id=application.requester_id,
                         action_type="Canceled Blood Request",
-                        action_description=f"Application Canceled. ID: {application}"
+                        action_description=f"Application Canceled. {application}"
                 )
+                log_activity(
+                        user_id=application.donor_id,
+                        action_type="Canceled Blood Request",
+                        action_description=f"Application Canceled. {application}"
+                )
+                application.donor_id = None
+                db.session.commit()
                 return jsonify({"message": "Application successfully canceled."}), 200
             return jsonify({"error": "Application not found."}), 404
         return jsonify({"error": "User not found."}), 404

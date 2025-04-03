@@ -5,7 +5,6 @@ log_api = Blueprint('log_api', __name__)
 
 @log_api.route("/get-logs", methods=["GET"])
 def get_activity_logs():
-    print("Works")
     if "username" not in session:
         return jsonify({"error": "Unauthorized access. Please log in."}), 401
 
