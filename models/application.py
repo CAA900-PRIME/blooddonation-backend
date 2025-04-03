@@ -45,7 +45,7 @@ class Applications(db.Model):
         self.appointment = appointment
     
     def __repr__(self):
-        return f'<Application {self.id} - {self.requester} - {self.donor_id} - {self.status}>'
+        return f'<Application {self.id} - {self.hospital_name} - {self.requester} - {self.donor}>'
 
 ### Usage example:
 # new_application = Application(

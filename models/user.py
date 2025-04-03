@@ -46,4 +46,4 @@ class Users(db.Model):
         self.profile_pic = None
 
     def __repr__(self):
-        return f'<User {self.username} {self.firstName} {self.lastName}>'
+        return f'<User {self.username} - {self.firstName} {self.email}>'
